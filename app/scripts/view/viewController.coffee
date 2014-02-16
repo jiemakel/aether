@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('fi.seco.voidViewer')
+angular.module('fi.seco.aether')
   .controller('ViewCtrl', ($scope,$q,$location,$timeout,voidService,sparql,$window,$anchorScroll,$stateParams,prefixService) ->
     $scope.scrollTo = (id) ->
       $location.hash(id)

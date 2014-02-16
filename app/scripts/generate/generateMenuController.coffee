@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('fi.seco.voidViewer')
+angular.module('fi.seco.aether')
   .controller('GenerateMenuCtrl', ($q,$scope,$location,$stateParams,sparql) ->
     $scope.errors=[]
     handleError = (data,status,headers,config) ->

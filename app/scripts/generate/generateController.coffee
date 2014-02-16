@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('fi.seco.voidViewer')
+angular.module('fi.seco.aether')
   .controller('GenerateCtrl', ($stateParams,$scope,$modal,$timeout,sparql,voidService) ->
     $scope.errors=[]
     handleError = (data,status,headers,config) ->

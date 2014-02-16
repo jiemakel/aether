@@ -2,7 +2,7 @@
 
 angular.module('fi.seco.httpthrottle').value('maxRequests',4)
 
-angular.module('fi.seco.voidViewer', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
+angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
   .config ($stateProvider, $urlRouterProvider) ->
     $urlRouterProvider.otherwise('/')
     $stateProvider.state('view', {

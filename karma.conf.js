@@ -12,11 +12,28 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'app/bower_components/angular/angular.js',
-      'app/bower_components/angular/angular-mocks.js',
-      'app/scripts/*.coffee',
-      'app/scripts/**/*.coffee',
-      'test/mock/**/*.coffee',
-      'test/spec/**/*.coffee'
+      'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/bower_components/angular-animate/angular-animate.js',
+      'app/bower_components/angular-ui-router/release/angular-ui-router.js',
+      'app/bower_components/d3/d3.js',
+      'app/bower_components/nvd3/nv.d3.js',
+      'app/bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js',
+      'app/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      'app/scripts/*/*.js',
+      '.tmp/scripts/*/*.js',
+
+      'app/scripts/**/*.js',
+      '.tmp/scripts/**/*.js',
+
+      'test/mock/**/*.js',
+      '.tmp/test/mock/**/*.js',
+      
+      'test/spec/**/*.js',
+      '.tmp/test/spec/**/*.js',
+      
+      {pattern: '.tmp/scripts/**/*.js.map', watched: true, included:false, served: true},
+      {pattern: '.tmp/mock/**/*.js.map', watched: true, included:false, served: true},      
+      {pattern: '.tmp/spec/**/*.js.map', watched: true, included:false, served: true}
     ],
 
     // list of files / patterns to exclude
