@@ -1,0 +1,51 @@
+<div>
+    <div class="text-right">(<a ui-sref="index">back to main</a>)</div>
+    <h1>Aether VoID Statistics Generator</h1>
+
+    <div class="form-group" ng-class="{ 'has-error': !sparqlEndpointInputValid && sparqlEndpointInputHasFocus, 'has-success': sparqlEndpointInputValid && sparqlEndpointInputHasFocus }">
+        <label class="control-label">SPARQL Endpoint:</label>
+        <input type="text" ng-model="sparqlEndpointInput" class="form-control" ng-blur="sparqlEndpoint = sparqlEndpointInputValid ? sparqlEndpointInput : sparqlEndpoint ; sparqlEndpointInputHasFocus = !sparqlEndpointInputValid" ng-focus="sparqlEndpointInputHasFocus = true">
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Graph:</label>
+        <div ng-class="graphIRIFetching && 'input-group'">
+        <select ng-model="graphIRI" ng-readonly="graphIRIFetching" class="form-control" ng-options="graph.graphIRI.value as (graph.graphIRI.value || 'default')+' ('+(graph.triples.value | number)+' triples)' for graph in graphs">
+        </select>
+        <span ng-show="graphIRIFetching" class="input-group-addon"><i class="glyphicon glyphicon-refresh fa-spin"></i></span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{ 'has-error': !sparulEndpointInputValid && sparulEndpointInputHasFocus, 'has-success': sparulEndpointInputValid && sparulEndpointInputHasFocus }">
+        <label class="control-label">SPARUL Endpoint:</label>
+        <input type="text" ng-model="sparulEndpointInput" class="form-control" ng-blur="sparulEndpoint = sparulEndpointInputValid ? sparulEndpointInput : sparulEndpoint; sparulEndpointInputHasFocus = !sparulEndpointInputValid" ng-focus="sparulEndpointInputHasFocus = true">
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Update Graph:</label>
+        <input type="text" ng-model="updateGraphIRI" class="form-control" placeholder="default">
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Dataset IRI:</label>
+        <input type="text" ng-model="datasetIRI" class="form-control">
+    </div>
+
+    <div class="checkbox">
+        <label class="control-label"><input ng-model="doSelections" type="checkbox"> Calculate stats for all partitions (allows viewing graphs for each partition but takes much longer)
+        </label>
+    </div>
+
+    <div class="form-group">
+        <button ng-disabled="datasetIRI==null || sparulEndpoint == null || sparqlEndpoint == null" type="submit" class="btn btn-default" ui-sref="generate({doSelections:doSelections,sparqlEndpoint:sparqlEndpoint,sparulEndpoint:sparulEndpoint,datasetIRI:datasetIRI,graphIRI:graphIRI,updateGraphIRI:updateGraphIRI})">Generate</button>
+    </div>
+
+    <div class="row">
+    <div ng-repeat="error in errors" class="alert alert-block alert-danger">
+       {{error.errorSource}} returned error {{error.errorStatus}}:<br>
+       {{error.error}}
+       <br>for query:<br>
+       {{error.query}}
+    </div>
+    </div>
+</div>

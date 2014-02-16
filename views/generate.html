@@ -1,0 +1,48 @@
+<div>
+
+    <h1>Aether VoID Statistics Generator</h1>
+
+    <h3><span class="glyphicon glyphicon-time"></span> Progress for {{datasetIRI}}</h3>
+
+    <p>Time since start: {{((curTime - startTime) / 1000) % (60 * 60 * 24) / (60 * 60) | number: 0}}:{{((curTime - startTime) / 1000) % (60 * 60) / 60 | number: 0}}:{{((curTime - startTime) / 1000) % 60 | number: 0}}
+    </p>
+
+    <small><em>Total Queries</em></small>
+    <progress ng-class="{ 'progress-striped' : (total.processed+total.errors)<total.total, 'active': (total.processed+total.errors)<total.total }">
+        <bar value="100*total.processed/total.total" type="{{ (total.processed+total.errors)==total.total && 'success' || 'info' }}"><span style="color:black; white-space:nowrap">{{ total.processed || 0 }}/{{ total.total || '?' }}</span></bar>
+        <bar value="100*total.errors/total.total" type="danger" ng-show="total.errors>0"><span style="color:black; white-space:nowrap">{{ total.errors }}</span></bar>
+    </progress>
+
+    At any time, you may view the statistics already generated <a target="_blank" ui-sref="view({sparqlEndpoint:sparqlEndpoint,graphIRI:graphIRI,datasetIRI:datasetIRI})">here</a>, with the rest calculated dynamically.
+
+    <h4>Main Statistics <span class="glyphicon" ng-class="{ 'glyphicon-ok' : main.processed==main.total, 'text-success' : main.processed==main.total, 'text-danger' : main.errors>0, 'glyphicon-remove' : main.errors>0}"></span></h4>
+
+    <div class="row">
+        <div class="col-sm-3" ng-repeat="statName in stats">
+            <small><em>{{statName}}</em>: <span class="glyphicon" ng-class="{ 'glyphicon-ok' : statStatus[statName]=='ok', 'text-success' : statStatus[statName]=='ok', 'text-danger' : statStatus[statName]=='error', 'glyphicon-remove' : statStatus[statName]=='error'}"></span></small>
+        </div>
+    </div>
+
+    <div ng-show="doSelections">
+    <h4>Statistics for Partitions</h4>
+
+    <div class="row">
+        <div class="col-sm-2" ng-repeat="statName in stats | filter:statFilter()">
+            <small><em>{{statName}}</em></small>
+            <progress ng-class="{ 'progress-striped' : (subStatStatus[statName].processed+subStatStatus[statName].errors)<subStatStatus[statName].total, 'active': (subStatStatus[statName].processed+subStatStatus[statName].errors)<subStatStatus[statName].total }">
+                <bar value="100*subStatStatus[statName].processed/subStatStatus[statName].total" type="{{ (subStatStatus[statName].processed+subStatStatus[statName].errors)==subStatStatus[statName].total && 'success' || 'info' }}"><span style="color:black; white-space:nowrap">{{ subStatStatus[statName].processed || 0 }}/{{ subStatStatus[statName].total || '?' }}</span></bar>
+                <bar value="100*subStatStatus[statName].errors/subStatStatus[statName].total" type="danger" ng-show="subStatStatus[statName].errors>0"><span style="color:black; white-space:nowrap">{{ subStatStatus[statName].errors }}</span></bar>
+            </progress>
+        </div>
+     </div>
+    </div>
+
+    <div class="row">
+        <div ng-repeat="error in errors" class="alert alert-block alert-danger">
+           {{error.errorSource}} returned error {{error.errorStatus}}:<br>
+           {{error.error}}
+           <br>for query:<br>
+           {{error.query}}
+        </div>
+    </div>
+</div>
