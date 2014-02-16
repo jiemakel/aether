@@ -1,0 +1,74 @@
+$icon-font-path: "../bower_components/bootstrap-sass/fonts/";
+$fa-font-path: "../bower_components/components-font-awesome/fonts/";
+
+@import "bootstrap-sass/lib/bootstrap";
+@import "components-font-awesome/scss/font-awesome";
+
+/* Put your CSS here */
+
+body {
+    background: #fafafa;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+    margin-top: 50px;
+}
+
+a:hover.hoverstrike {
+  text-decoration:line-through;
+}
+
+.animate-show {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+  line-height:20px;
+  opacity:1;
+  padding:10px;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove {
+  display:block!important;
+}
+
+.animate-show.ng-hide {
+  line-height:0;
+  opacity:0;
+  padding:0 10px;
+}
+
+.limitSelector {
+  width: auto;
+  display: inline;
+}
+
+.displaced-anchor {
+  display:block;
+  visibility:hidden;
+  position:relative;
+  top:-70px;
+}
+
+.slide.ng-leave {
+  position: relative;
+}
+.slide.ng-enter {
+  position: absolute;
+}
+.slide.ng-enter, .slide.ng-leave {
+  -webkit-transition: -webkit-transform 0.3s ease-in, opacity 0.3s ease-in;
+  -moz-transition: -moz-transform 0.3s ease-in, opacity 0.3s ease-in;
+  -o-transition: -o-transform 0.3s ease-in, opacity 0.3s ease-in;
+  transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+}
+.slide.ng-enter, .slide.ng-leave.ng-leave-active {
+  -webkit-transform: scaleX(0.0001);
+  -o-transform: scaleX(0.0001);
+  transform: scaleX(0.0001);
+  opacity: 0;
+}
+.slide, .slide.ng-enter.ng-enter-active {
+  -webkit-transform: scaleX(1);
+  -o-transform: scaleX(1);
+  transform: scaleX(1);
+  opacity: 1;
+}

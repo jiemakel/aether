@@ -1,0 +1,24 @@
+{
+  "name": "aether",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "*",
+    "jquery": "*",
+    "bootstrap-sass": "*",
+    "angular-sanitize": "*",
+    "angular-ui-router": "0.2.8",
+    "angularjs-nvd3-directives": "*",
+    "underscore.string": "*",
+    "underscore": "*",
+    "angular-bootstrap": "~0.10.0",
+    "angular-animate": "~1.2.9",
+    "components-font-awesome": "~4.0.3"
+  },
+  "devDependencies": {
+    "angular-mocks": "*",
+    "angular-scenario": "*"
+  },
+  "resolutions": {
+    "d3": "3.3.11"
+  }
+}
