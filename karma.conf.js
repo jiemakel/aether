@@ -19,21 +19,25 @@ module.exports = function(config) {
       'app/bower_components/nvd3/nv.d3.js',
       'app/bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js',
       'app/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-      'app/scripts/*/*.js',
-      '.tmp/scripts/*/*.js',
+      'app/scripts/*/*.coffee',
+//      '.tmp/scripts/*/*.js',
 
-      'app/scripts/**/*.js',
-      '.tmp/scripts/**/*.js',
+      'app/scripts/**/*.coffee',
+//      '.tmp/scripts/**/*.js',
 
-      'test/mock/**/*.js',
-      '.tmp/test/mock/**/*.js',
+      'test/mock/**/*.coffee',
+//      '.tmp/test/mock/**/*.js',
       
-      'test/spec/**/*.js',
-      '.tmp/test/spec/**/*.js',
-      
-      {pattern: '.tmp/scripts/**/*.js.map', watched: true, included:false, served: true},
-      {pattern: '.tmp/mock/**/*.js.map', watched: true, included:false, served: true},      
-      {pattern: '.tmp/spec/**/*.js.map', watched: true, included:false, served: true}
+      'test/spec/**/*.js'
+//      '.tmp/test/spec/**/*.js',
+
+//      {pattern: 'app/scripts/**/*.coffee', watched: true, included:false, served: true},
+//      {pattern: 'test/mock/**/*.coffee', watched: true, included:false, served: true},      
+//      {pattern: 'test/spec/**/*.coffee', watched: true, included:false, served: true},
+
+//      {pattern: '.tmp/scripts/**/*.js.map', watched: true, included:false, served: true},
+//      {pattern: '.tmp/mock/**/*.js.map', watched: true, included:false, served: true},      
+//      {pattern: '.tmp/spec/**/*.js.map', watched: true, included:false, served: true}
     ],
 
     // list of files / patterns to exclude

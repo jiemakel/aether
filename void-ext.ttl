@@ -1,0 +1,186 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix formats: <http://www.w3.org/ns/formats/> .
+@prefix void-ext: <http://ldf.fi/void-ext#> .
+
+<http://ldf.fi/void-ext> a owl:Ontology ;
+	owl:versionInfo "1.0.0" ;
+	owl:imports <http://rdfs.org/ns/void> ;
+	dcterms:title "Extensions to the Vocabulary of Interlinked Datasets (VoID)" ;
+	dcterms:description "Extensions to the Vocabulary of Interlinked Datasets (VoID)" ;
+	dcterms:modified "2014-02-17"^^xsd:date ;
+	foaf:homepage <http://ldf.fi/schema/void-ext/index.html> ;
+	vann:preferredNamespaceUri "http://ldf.fi/void-ext#";
+    	vann:preferredNamespacePrefix "void-ext";
+	dcterms:created "2014-02-17"^^xsd:date ;
+	dcterms:publisher "Semantic Computing Research Group" ;
+	dc:creator "Eetu Mäkelä" .
+
+void-ext:distinctRDFNodes
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct RDF nodes" ;
+	rdfs:comment "The total number of distinct RDF nodes in a void:Dataset. In other words, the number of distinct literals, IRI references and blank nodes that occur in the subject, predicate or object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctIRIReferences
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct IRI references" ;
+	rdfs:comment "The total number of distinct IRI references in a void:Dataset. In other words, the number of distinct IRI references that occur in the subject, predicate or object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctBlankNodes
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct blank nodes" ;
+	rdfs:comment "The total number of distinct blank nodes in a void:Dataset. In other words, the number of distinct blank nodes that occur in the subject or object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctLiterals
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct literals" ;
+	rdfs:comment "The total number of distinct literals in a void:Dataset. In other words, the number of distinct literals that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctIRIReferenceSubjects
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct IRI reference subjects" ;
+	rdfs:comment "The total number of distinct IRI reference subjects in a void:Dataset. In other words, the number of distinct IRI references that occur in the subject position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctBlankNodeSubjects
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct blank node subjects" ;
+	rdfs:comment "The total number of distinct blank node subjects in a void:Dataset. In other words, the number of distinct blank nodes that occur in the subject position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctIRIReferenceObjects
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct IRI reference objects" ;
+	rdfs:comment "The total number of distinct IRI reference objects in a void:Dataset. In other words, the number of distinct IRI references that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:distinctBlankNodeObjects
+	a owl:DatatypeProperty ;
+	rdfs:label "distinct blank node objects" ;
+	rdfs:comment "The total number of distinct blank node objects in a void:Dataset.  In other words, the number of distinct blank nodes that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:propertyClasses 
+	a owl:DatatypeProperty ;
+	rdfs:label "property classes";
+	rdfs:comment "The total number of distinct property classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the predicate position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:objectClasses 
+	a owl:DatatypeProperty ;
+	rdfs:label "object classes";
+	rdfs:comment "The total number of distinct object classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:datatypes
+	a owl:DatatypeProperty ;
+	rdfs:label "datatypes" ;
+	rdfs:comment "The total number of literal datatypes in a void:Dataset. In other words, the number of distinct datatypes that appear in any datatyped literal objects in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:languages
+	a owl:DatatypeProperty ;
+	rdfs:label "languages" ;
+	rdfs:comment "The total number of literal languages in a void:Dataset. In other words, the number of distinct languages that appear in any language literal objects in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:subjectPartition
+	a owl:ObjectProperty ;
+	rdfs:label "subject partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only triples with a certain subject." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:subject
+	a owl:ObjectProperty, owl:FunctionalProperty ;
+	rdfs:label "subject" ;
+	rdfs:comment "the resource that is the subject of all triples in a subject-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range rdfs:Resource .
+
+void-ext:objectPartition
+	a owl:ObjectProperty ;
+	rdfs:label "object partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only triples with a certain object." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:object
+	a rdf:Property, owl:FunctionalProperty ;
+	rdfs:label "object" ;
+	rdfs:comment "the resource that is the object of all triples in an object-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range rdfs:Resource .
+
+void-ext:subjectNamespacePartition
+	a owl:ObjectProperty ;
+	rdfs:label "subject namespace partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only entities that occur in the subject position of triples in the dataset and start with a certain namespace." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:propertyNamespacePartition
+	a owl:ObjectProperty ;
+	rdfs:label "property namespace partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only entities that occur in the predicate position of triples in the dataset and start with a certain namespace." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:objectNamespacePartition
+	a owl:ObjectProperty ;
+	rdfs:label "object namespace partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only entities that occur in the object position of triples in the dataset and start with a certain namespace." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:namespace
+	a owl:ObjectProperty, owl:FunctionalProperty ;
+	rdfs:label "object" ;
+	rdfs:comment "the namespace that is required of resources to be included into a namespace-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range rdfs:Resource .
+
+void-ext:propertyClassPartition
+	a owl:ObjectProperty ;
+	rdfs:label "property class partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only entities of a certain rdfs:Class that occur in the predicate position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+
+void-ext:objectClassPartition
+	a owl:ObjectProperty ;
+	rdfs:label "object class partition" ;
+	rdfs:comment "A subset of a void:Dataset that contains only entities of a certain rdfs:Class that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range void:Dataset ;
+	rdfs:subPropertyOf void:subset .
+

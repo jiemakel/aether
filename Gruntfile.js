@@ -46,6 +46,12 @@ module.exports = function (grunt) {
         ]
       }
     },
+    'gh-pages': {
+      options: {
+        base: 'dist'
+      },
+      src: ['**']
+    },
     autoprefixer: {
       options: ['last 1 version'],
       dist: {
@@ -168,7 +174,9 @@ module.exports = function (grunt) {
             '<%= yeoman.dist %>/scripts/{,*/}*.js',
             '<%= yeoman.dist %>/styles/{,*/}*.css',
             '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-            '<%= yeoman.dist %>/styles/fonts/*'
+            '<%= yeoman.dist %>/styles/fonts/*',
+            '<%= yeoman.dist %>/bower_components/bootstrap-sass/fonts/*',
+            '<%= yeoman.dist %>/bower_components/components-font-awesome/fonts/*'
           ]
         }
       }
@@ -253,7 +261,8 @@ module.exports = function (grunt) {
             '.htaccess',
 //            'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
-            'styles/fonts/*'
+            'styles/fonts/*',
+            'bower_components/*/fonts/*'
           ]
         }, {
           expand: true,
@@ -294,7 +303,13 @@ module.exports = function (grunt) {
     karma: {
       unit: {
         configFile: 'karma.conf.js',
-        singleRun: true
+        singleRun: true,
+        autoWatch: false
+      },
+      server: {
+        configFile: 'karma.conf.js',
+        singleRun: false,
+        autoWatch: true
       }
     },
     cdnify: {
@@ -345,7 +360,7 @@ module.exports = function (grunt) {
     'concurrent:test',
     'autoprefixer',
     'connect:test',
-    'karma'
+    'karma:unit'
   ]);
 
   grunt.registerTask('build', [
