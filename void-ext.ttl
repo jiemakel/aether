@@ -79,17 +79,24 @@ void-ext:distinctBlankNodeObjects
 	rdfs:domain void:Dataset ;
 	rdfs:range xsd:integer .
 
+void-ext:subjectClasses
+	a owl:DatatypeProperty ;
+	rdfs:label "subject classes";
+	rdfs:comment "The total number of distinct subject classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the subject position of triples in the (sub-)dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
 void-ext:propertyClasses 
 	a owl:DatatypeProperty ;
 	rdfs:label "property classes";
-	rdfs:comment "The total number of distinct property classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the predicate position of triples in the dataset." ;
+	rdfs:comment "The total number of distinct property classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the predicate position of triples in the (sub-)dataset." ;
 	rdfs:domain void:Dataset ;
 	rdfs:range xsd:integer .
 
 void-ext:objectClasses 
 	a owl:DatatypeProperty ;
 	rdfs:label "object classes";
-	rdfs:comment "The total number of distinct object classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the object position of triples in the dataset." ;
+	rdfs:comment "The total number of distinct object classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset, where the subjects of the rdf:type triples occur in the object position of triples in the (sub-)dataset." ;
 	rdfs:domain void:Dataset ;
 	rdfs:range xsd:integer .
 
@@ -163,7 +170,7 @@ void-ext:objectNamespacePartition
 
 void-ext:namespace
 	a owl:ObjectProperty, owl:FunctionalProperty ;
-	rdfs:label "object" ;
+	rdfs:label "namespace" ;
 	rdfs:comment "the namespace that is required of resources to be included into a namespace-based partition." ;
 	rdfs:domain void:Dataset ;
 	rdfs:range rdfs:Resource .
@@ -183,4 +190,34 @@ void-ext:objectClassPartition
 	rdfs:domain void:Dataset ;
 	rdfs:range void:Dataset ;
 	rdfs:subPropertyOf void:subset .
+
+void-ext:languagePartition
+        a owl:ObjectProperty ;
+        rdfs:label "object language partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only literals that have a certain language tag." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:language
+        a owl:DatatypeProperty, owl:FunctionalProperty ;
+        rdfs:label "language" ;
+        rdfs:comment "the language that is required of literals to be included into a language-based partition." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range rdf:PlainLiteral .
+
+void-ext:datatypePartition
+        a owl:ObjectProperty ;
+        rdfs:label "object datatype partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only literals that have a certain datatype." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:datatype
+        a owl:ObjectProperty, owl:FunctionalProperty ;
+        rdfs:label "datatype" ;
+        rdfs:comment "the datatype that is required of literals to be included into a datatype-based partition." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range rdfs:Resource .
 
