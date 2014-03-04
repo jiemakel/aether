@@ -37,12 +37,11 @@
      </div>
     </div>
 
-    <div class="row">
+    <div class="clearfix"></div>
         <div ng-repeat="error in errors" class="alert alert-block alert-danger">
            {{error.errorSource}} returned error {{error.errorStatus}}:<br>
            {{error.error}}
            <br>for query:<br>
            {{error.query}}
         </div>
-    </div>
 </div>
