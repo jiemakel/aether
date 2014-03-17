@@ -1216,7 +1216,7 @@ angular.module('fi.seco.prefix',[]).factory('prefixService', () ->
     shortForm : (iuri) ->
       if (iuri.charAt(iuri.length-1)=='>' && iuri.indexOf('"^^<')!=-1) # datatyped literal
         uri = iuri.substring(iuri.indexOf('"^^<')+4,iuri.length-1)
-        return iuri.substring(0,iuri.indexOf('"^^<')+3) + shortForm(uri)
+        return iuri.substring(0,iuri.indexOf('"^^<')+3) + this.shortForm(uri)
       if (iuri.charAt(0)=='"') then return iuri
       if (iuri.charAt(0)=='<' && iuri.charAt(iuri.length-1)=='>') then uri = iuri.substring(1,iuri.length-1) else uri = iuri
       pos = getLastSplit(uri,uri.length)

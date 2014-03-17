@@ -114,6 +114,41 @@ void-ext:languages
 	rdfs:domain void:Dataset ;
 	rdfs:range xsd:integer .
 
+void-ext:averageIRILength
+	a owl:DatatypeProperty ;
+	rdfs:label "average IRI length" ;
+	rdfs:comment "The average length of IRIs in a void:Dataset. In other words, the average length of IRIs that occur in the subject, predicate or object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:averageSubjectIRILength
+	a owl:DatatypeProperty ;
+	rdfs:label "average subject IRI length" ;
+	rdfs:comment "The average length of subject IRIs in a void:Dataset. In other words, the average length of IRIs that occur in the subject position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:averagePropertyIRILength
+	a owl:DatatypeProperty ;
+	rdfs:label "average property IRI length" ;
+	rdfs:comment "The average length of property IRIs in a void:Dataset. In other words, the average length of IRIs that occur in the property position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:averageObjectIRILength
+	a owl:DatatypeProperty ;
+	rdfs:label "average object IRI length" ;
+	rdfs:comment "The average length of object IRIs in a void:Dataset. In other words, the average length of IRIs that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:averageLiteralLength
+	a owl:DatatypeProperty ;
+	rdfs:label "average literal length" ;
+	rdfs:comment "The average length of literals in a void:Dataset. In other words, the average length of literals that occur in the object position of triples in the dataset." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
 void-ext:subjectPartition
 	a owl:ObjectProperty ;
 	rdfs:label "subject partition" ;
@@ -220,4 +255,65 @@ void-ext:datatype
         rdfs:comment "the datatype that is required of literals to be included into a datatype-based partition." ;
         rdfs:domain void:Dataset ;
         rdfs:range rdfs:Resource .
+
+void-ext:literalLengthPartition
+        a owl:ObjectProperty ;
+        rdfs:label "literal length partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only literals that have a certain length." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;
+        rdfs:subPropertyOf void:subset .
+
+void-ext:iriLengthPartition
+        a owl:ObjectProperty ;
+        rdfs:label "IRI length partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only IRIs that have a certain length." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:subjectIRILengthPartition
+        a owl:ObjectProperty ;
+        rdfs:label "subject IRI length partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only IRIs that have a certain length and occur in the subject position of triples in the dataset." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:propertyIRILengthPartition
+        a owl:ObjectProperty ;
+        rdfs:label "property IRI length partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only IRIs that have a certain length and occur in the property position of triples in the dataset." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:objectIRILengthPartition
+        a owl:ObjectProperty ;
+        rdfs:label "object IRI length partition" ;
+        rdfs:comment "A subset of a void:Dataset that contains only IRIs that have a certain length and occur in the object position of triples in the dataset." ;
+        rdfs:domain void:Dataset ;
+        rdfs:range void:Dataset ;                                                                                                                                   
+        rdfs:subPropertyOf void:subset .
+
+void-ext:length
+	a owl:DatatypeProperty ;
+	rdfs:label "length" ;
+	rdfs:comment "An exact length that is required for an object to be included in a length-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:minLength
+	a owl:DatatypeProperty ;
+	rdfs:label "minimum length" ;
+	rdfs:comment "A minimum length (inclusive) that is required for an object to be included in a length-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
+
+void-ext:length
+	a owl:DatatypeProperty ;
+	rdfs:label "maximum length" ;
+	rdfs:comment "A maximum length (inclusive) that is required for an object to be included in a length-based partition." ;
+	rdfs:domain void:Dataset ;
+	rdfs:range xsd:integer .
 

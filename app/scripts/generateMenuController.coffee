@@ -24,13 +24,12 @@ angular.module('fi.seco.aether')
     $scope.$watch('graphIRI', (graphIRI,oldGraphIRI) ->
       if (graphIRI!=oldGraphIRI)
         $location.search('graphIRI',graphIRI).replace() #$state.go($state.current.name,{graphIRI:graphIRI},{location:'replace'})
-        if (graphIRI?)
-          if (graphIRI.charAt(graphIRI.length-1)!='/') then graphIRI += '/'
-          $scope.datasetIRI = graphIRI+"void@"+new Date().toISOString()
-          $scope.updateGraphIRI = graphIRI+"void"
-        else
-          $scope.datasetIRI = $scope.sparqlEndpoint.replace(/sparql/g,'void')+'@'+new Date().toISOString()
-          $scope.updateGraphIRI = $scope.sparqlEndpoint.replace(/sparql/g,'void')
+        if (!$stateParams.datasetIRI?)
+          if (graphIRI?)
+            if (graphIRI.charAt(graphIRI.length-1)!='/') then graphIRI += '/'
+            $scope.datasetIRI = graphIRI+"void/Dataset@"+new Date().toISOString()
+          else
+            $scope.datasetIRI = $scope.sparqlEndpoint.replace(/sparql\/?$/,'void')+'/Dataset@'+new Date().toISOString()
     )
     $scope.$watch('datasetIRI', (datasetIRI,oldDatasetIRI) ->
       if (datasetIRI!=oldDatasetIRI)
@@ -41,15 +40,6 @@ angular.module('fi.seco.aether')
       if (updateGraphIRI!=oldUpdateGraphIRI)
         if (updateGraphIRI=='') then updateGraphIRI = null
         $location.search('updateGraphIRI',updateGraphIRI).replace() #$state.go($state.current.name,{updateGraphIRI:updateGraphIRI},{location:'replace'})
-        if(updateGraphIRI?)
-          $scope.datasetIRI = updateGraphIRI+'@'+new Date().toISOString()
-        else
-          graphIRI = $scope.graphIRI
-          if (graphIRI?)
-            if (graphIRI.charAt(graphIRI.length-1)!='/') then graphIRI += '/'
-            $scope.datasetIRI = graphIRI+"void@"+new Date().toISOString()
-          else
-            $scope.datasetIRI = $scope.sparqlEndpoint.replace(/sparql/g,'void')+'@'+new Date().toISOString()
     )
     $scope.$watch('sparulEndpoint', (sparulEndpoint,oldSparulEndpoint) ->
       if (sparulEndpoint!=oldSparulEndpoint)
@@ -84,8 +74,8 @@ angular.module('fi.seco.aether')
       if (sparqlEndpoint!=oldSparqlEndpoint)
         $location.search('sparqlEndpoint',sparqlEndpoint).replace() #$state.go($state.current.name,{sparqlEndpoint:sparqlEndpoint},{location:'replace'})
         $scope.sparqlEndpointInput = sparqlEndpoint
-        $scope.datasetIRI = sparqlEndpoint.replace(/sparql/g,'void')+'@'+new Date().toISOString()
-        $scope.updateGraphIRI = sparqlEndpoint.replace(/sparql/g,'void')
+        $scope.datasetIRI = sparqlEndpoint.replace(/sparql\/?$/,'void')+'/Dataset@'+new Date().toISOString()
+        $scope.updateGraphIRI = sparqlEndpoint.replace(/sparql\/?$/,'void/')
         fetchGraphs()
     )
     $scope.$watch('doSelections', (doSelections,oldDoSelections) ->

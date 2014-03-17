@@ -1,7 +1,8 @@
 'use strict'
 
 angular.module('fi.seco.aether')
-  .controller('GenerateCtrl', ($stateParams,$scope,$modal,$timeout,sparql,voidService) ->
+  .controller('GenerateCtrl', ($stateParams,$window,$scope,$modal,$timeout,sparql,voidService) ->
+    $scope.Math=$window.Math
     $scope.errors=[]
     handleError = (data,status,headers,config) ->
       $scope.errors.push({ errorSource : config.url, errorStatus : status, query : config.data ? config.params.query, error: data })
@@ -12,11 +13,11 @@ angular.module('fi.seco.aether')
         voidService.partitionStatInfo[item]?
     $scope.statStatus = {}
     $scope.subStatStatus = {}
-    calculateStatistic = (track,statName,limitStat,limitTarget,retry) ->
+    calculateStatistic = (track,statName,limitStat,limitTarget,retries) ->
       voidService.calculateStatistic($stateParams.sparqlEndpoint,$stateParams.graphIRI,statName,limitStat,limitTarget).success((data,status,headers,config) ->
         if (!data.head?.vars?)
-          if (retry)
-            calculateStatistic(track,statName,limitStat,limitTarget,false)
+          if (retries>0)
+            calculateStatistic(track,statName,limitStat,limitTarget,retries-1)
           else
             if (limitStat=='none')
               $scope.statStatus[statName]='error'
@@ -28,7 +29,7 @@ angular.module('fi.seco.aether')
             handleError(data,status+', but bad data',headers,config)
         else
           $scope.total.processed++
-          if ($stateParams.doSelections && limitStat=='none' && voidService.partitionStatInfo[statName])
+          if ($stateParams.doSelections==true && limitStat=='none' && voidService.partitionStatInfo[statName])
             info = { errors: 0, processed: 0, total : data.results.bindings.length}
             $scope.subStatStatus[statName] = info
             $scope.total.total += data.results.bindings.length*2*$scope.stats.length
@@ -63,7 +64,7 @@ angular.module('fi.seco.aether')
     calculateStatistics = (limitStat,limitTarget) ->
       track = { successfulParts : 0, errored : false }
       for statName in voidService.generateStats then do (statName) ->
-        calculateStatistic(track,statName,limitStat,limitTarget,true)
+        calculateStatistic(track,statName,limitStat,limitTarget,3)
     $scope.startTime = new Date()
     $scope.total = {
       processed : 0, errors : 0, total : 2*$scope.stats.length
@@ -73,7 +74,7 @@ angular.module('fi.seco.aether')
       $scope.curTime = new Date()
       timer = $timeout(updateDate,1000)
     updateDate()
-    voidService.insertMetadata($stateParams.sparulEndpoint,$stateParams.updateGraphIRI,"<#{$stateParams.sparqlEndpoint}>","<#{$stateParams.datasetIRI}>",$scope.startTime.toISOString(),window.user_ip_address).success((data) ->
+    voidService.insertMetadata($stateParams.sparulEndpoint,$stateParams.updateGraphIRI,"<#{$stateParams.sparqlEndpoint}>",$stateParams.graphIRI,"<#{$stateParams.datasetIRI}>",$scope.startTime.toISOString(),window.user_ip_address).success((data) ->
       calculateStatistics('none',null)
     ).error(handleError)
     $scope.sparqlEndpoint = $stateParams.sparulEndpoint.replace('update','sparql')

@@ -2,6 +2,8 @@
     <div class="text-right">(<a ui-sref="index">back to main</a>)</div>
     <h1>Aether VoID Statistics Generator</h1>
 
+    <h4 class="page-header">Generate statistics for</h4>
+
     <div class="form-group" ng-class="{ 'has-error': !sparqlEndpointInputValid && sparqlEndpointInputHasFocus, 'has-success': sparqlEndpointInputValid && sparqlEndpointInputHasFocus }">
         <label class="control-label">SPARQL Endpoint:</label>
         <input type="text" ng-model="sparqlEndpointInput" class="form-control" ng-blur="sparqlEndpoint = sparqlEndpointInputValid ? sparqlEndpointInput : sparqlEndpoint ; sparqlEndpointInputHasFocus = !sparqlEndpointInputValid" ng-focus="sparqlEndpointInputHasFocus = true"/>
@@ -16,23 +18,25 @@
         </div>
     </div>
 
+    <h4 class="page-header">Store statistics in</h4>
+
     <div class="form-group" ng-class="{ 'has-error': !sparulEndpointInputValid && sparulEndpointInputHasFocus, 'has-success': sparulEndpointInputValid && sparulEndpointInputHasFocus }">
         <label class="control-label">SPARUL Endpoint:</label>
         <input type="text" ng-model="sparulEndpointInput" class="form-control" ng-blur="sparulEndpoint = sparulEndpointInputValid ? sparulEndpointInput : sparulEndpoint; sparulEndpointInputHasFocus = !sparulEndpointInputValid" ng-focus="sparulEndpointInputHasFocus = true"/>
     </div>
 
     <div class="form-group">
-        <label class="control-label">Update Graph:</label>
+        <label class="control-label">Graph:</label>
         <input type="text" ng-model="updateGraphIRI" class="form-control" placeholder="default"/>
     </div>
 
     <div class="form-group">
-        <label class="control-label">Dataset IRI:</label>
+        <label class="control-label">IRI for Dataset:</label>
         <input type="text" ng-model="datasetIRI" class="form-control"/>
     </div>
 
     <div class="checkbox">
-        <label class="control-label"><input ng-model="doSelections" type="checkbox"> Calculate stats for all partitions (allows viewing graphs for each partition but takes much longer)
+        <label class="control-label"><input ng-model="doSelections" type="checkbox"> Calculate statistics for all partitions (allows viewing graphs for each partition but takes much longer)
         </label>
     </div>
 

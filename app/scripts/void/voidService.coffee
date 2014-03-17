@@ -8,6 +8,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     PREFIX void: <http://rdfs.org/ns/void#>
+    PREFIX sd: <http://www.w3.org/ns/sparql-service-description#>
     PREFIX void-ext: <http://ldf.fi/void-ext#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
     PREFIX sioc: <http://rdfs.org/sioc/ns#>
@@ -16,10 +17,11 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     '''
   queries = {
     'General' : prefixes + '''
-    SELECT ?triples ?distinctIRIReferences ?distinctLiterals ?distinctBlankNodes ?distinctRDFNodes ?properties ?distinctSubjects ?distinctObjects ?distinctIRIReferenceSubjects ?distinctBlankNodeSubjects ?distinctIRIReferenceObjects ?distinctBlankNodeObjects ?classes ?propertyClasses ?objectClasses ?sparqlEndpoint ?datatypes ?languages {
+    SELECT ?triples ?distinctIRIReferences ?distinctLiterals ?distinctBlankNodes ?distinctRDFNodes ?properties ?distinctSubjects ?distinctObjects ?distinctIRIReferenceSubjects ?distinctBlankNodeSubjects ?distinctIRIReferenceObjects ?distinctBlankNodeObjects ?classes ?subjectClasses ?propertyClasses ?objectClasses ?sparqlEndpoint ?graphIRI ?datatypes ?languages ?averageIRILength ?averageLiteralLength ?averageSubjectIRILength ?averagePropertyIRILength ?averageObjectIRILength {
       |BEGINGRAPH|
       OPTIONAL { |DATASET| void:triples ?triples }
       OPTIONAL { |DATASET| void:classes ?classes }
+      OPTIONAL { |DATASET| void-ext:subjectClasses ?subjectClasses }
       OPTIONAL { |DATASET| void-ext:propertyClasses ?propertyClasses }
       OPTIONAL { |DATASET| void-ext:objectClasses ?objectClasses }
       OPTIONAL { |DATASET| void-ext:distinctIRIReferences ?distinctIRIReferences }
@@ -36,8 +38,52 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       OPTIONAL { |DATASET| void-ext:datatypes ?datatypes }
       OPTIONAL { |DATASET| void-ext:languages ?languages }
       OPTIONAL { |DATASET| void:sparqlEndpoint ?sparqlEndpoint }
+      OPTIONAL { |DATASET| sd:name ?graphIRI }
+      OPTIONAL { |DATASET| void-ext:averageIRILength ?averageIRILength }
+      OPTIONAL { |DATASET| void-ext:averageLiteralLength ?averageLiteralLength }
+      OPTIONAL { |DATASET| void-ext:averageSubjectIRILength ?averageSubjectIRILength }
+      OPTIONAL { |DATASET| void-ext:averagePropertyIRILength ?averagePropertyIRILength }
+      OPTIONAL { |DATASET| void-ext:averageObjectIRILength ?averageObjectIRILength }
       |ENDGRAPH|
     }
+    '''
+    'IRI Length' : prefixes + '''
+     SELECT ?length ?minLength ?maxLength ?entities {
+      |BEGINGRAPH|
+      |DATASET| void-ext:iriLengthPartition ?partition .
+      {
+        ?partition void-ext:length ?length .
+        BIND (?length AS ?minLength)
+        BIND (?length AS ?maxLength)
+      } UNION {
+        ?partition void-ext:minLength ?minLength .
+        OPTIONAL {
+          ?partition void-ext:maxLength ?maxLength .
+        }
+      }
+      ?partition void:entities ?entities .
+      |ENDGRAPH|
+    }
+    ORDER BY DESC(?minLength-?maxLength) ?minLength
+    '''
+    'Literal Length' : prefixes + '''
+     SELECT ?length ?minLength ?maxLength ?entities {
+      |BEGINGRAPH|
+      |DATASET| void-ext:literalLengthPartition ?partition .
+      {
+        ?partition void-ext:length ?length .
+        BIND (?length AS ?minLength)
+        BIND (?length AS ?maxLength)
+      } UNION {
+        ?partition void-ext:minLength ?minLength .
+        OPTIONAL {
+          ?partition void-ext:maxLength ?maxLength .
+        }
+      }
+      ?partition void:entities ?entities .
+      |ENDGRAPH|
+    }
+    ORDER BY DESC(?minLength-?maxLength) ?minLength
     '''
     'Property' : prefixes + '''
     SELECT ?p ?triples ?distinctSubjects ?distinctIRIReferenceSubjects ?distinctBlankNodeSubjects ?distinctObjects ?distinctIRIReferenceObjects ?distinctBlankNodeObjects ?distinctLiterals {
@@ -60,7 +106,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     'Object Datatype' : prefixes + '''
     SELECT ?datatype ?entities {
       |BEGINGRAPH|
-      |DATASET| void-ext:objectLiteralDatatypePartition ?partition .
+      |DATASET| void-ext:datatypePartition ?partition .
       ?partition void-ext:datatype ?datatype .
       ?partition void:entities ?entities .
       |ENDGRAPH|
@@ -71,7 +117,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     'Object Language' : prefixes + '''
     SELECT ?language ?entities {
       |BEGINGRAPH|
-      |DATASET| void-ext:objectLiteralLanguagePartition ?partition .
+      |DATASET| void-ext:languagePartition ?partition .
       ?partition void-ext:language ?language .
       ?partition void:entities ?entities .
       |ENDGRAPH|
@@ -182,12 +228,287 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     '''
   }
   calculationQueries = {
-    'Subject Class Count' : '''
+    'Class Count' : '''
         SELECT (COUNT(DISTINCT ?type) AS ?classes) {
           |BEGINGRAPH|
+          {
+            |BEFORECONSTRAINT|
+            ?s ?p ?o .
+            |AFTERCONSTRAINT|
+            BIND (?s AS ?n)
+          } UNION {
+            |BEFORECONSTRAINT|
+            ?s ?p ?o .
+            |AFTERCONSTRAINT|
+            BIND (?p AS ?n)
+          } UNION {
+            |BEFORECONSTRAINT|
+            ?s ?p ?o .
+            |AFTERCONSTRAINT|
+            BIND (?o AS ?n)
+          }          
+          ?n a ?type .
+          |ENDGRAPH|
+        }
+    '''
+    'Average IRI Length' : '''
+      SELECT (AVG(?length) AS ?averageIRILength) {
+                  {
+                    SELECT DISTINCT ?n {
+                      |BEGINGRAPH|
+                      {
+                        |BEFORECONSTRAINT|
+                        ?s ?p ?o .
+                        |AFTERCONSTRAINT|
+                        BIND (?s AS ?n)
+                      } UNION {
+                        |BEFORECONSTRAINT|
+                        ?s ?p ?o .
+                        |AFTERCONSTRAINT|
+                        BIND (?p AS ?n)
+                      } UNION {
+                        |BEFORECONSTRAINT|
+                        ?s ?p ?o .
+                        |AFTERCONSTRAINT|
+                        BIND (?o AS ?n)
+                      }         
+                      FILTER(isIRI(?n))
+                      |ENDGRAPH|
+                    }
+                  }
+                  BIND (strlen(str(?n)) AS ?length)
+      }
+    '''
+    'Average Literal Length' : '''
+      SELECT (AVG(?length) AS ?averageLiteralLength) {
+                  {
+                    SELECT DISTINCT ?o {
+                       |BEGINGRAPH|
+                       |BEFORECONSTRAINT|
+                       ?s ?p ?o .
+                       |AFTERCONSTRAINT|
+                       FILTER(isLiteral(?o))
+                       |ENDGRAPH|
+                    }
+                  }
+                  BIND (strlen(str(?o)) AS ?length)
+      }
+    '''
+    'IRI Length' : '''
+      PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
+      SELECT ?length ?minLength ?maxLength ?entities {
+        {
+          SELECT ?length (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?s AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?p AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?o AS ?n)
+                }         
+                FILTER(isIRI(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (strlen(str(?n)) AS ?minLength)
+            FILTER(?minLength<10)
+          }
+          GROUP BY ?length
+          ORDER BY ?length
+        }
+        UNION
+        {
+          SELECT ?minLength (?minLength+9 AS ?maxLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?s AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?p AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?o AS ?n)
+                }         
+                FILTER(isIRI(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (xsd:integer(floor(strlen(str(?n))/10)*10) AS ?minLength)
+            FILTER(?minLength<100)
+          }
+          GROUP BY ?minLength
+          ORDER BY ?minLength
+        }
+        UNION
+        {
+          SELECT ?minLength (?minLength+99 AS ?maxLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?s AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?p AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?o AS ?n)
+                }         
+                FILTER(isIRI(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (xsd:integer(floor(strlen(str(?n))/100)*100) AS ?minLength)
+            FILTER(?minLength<1000)
+          }
+          GROUP BY ?minLength
+          ORDER BY ?minLength
+          }
+          UNION
+          {
+          SELECT (1000 AS ?minLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?s AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?p AS ?n)
+                } UNION {
+                  |BEFORECONSTRAINT|
+                  ?s ?p ?o .
+                  |AFTERCONSTRAINT|
+                  BIND (?o AS ?n)
+                }         
+                FILTER(isIRI(?n))
+                |ENDGRAPH|
+              }
+            }
+            FILTER(strlen(str(?n))>=1000)
+          }
+        }
+        FILTER (?entities>0)
+      }
+    '''
+    'Literal Length' : '''
+      PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
+      SELECT ?length ?minLength ?maxLength ?entities {
+        {
+          SELECT ?length (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                |BEFORECONSTRAINT|
+                ?s ?p ?n .
+                |AFTERCONSTRAINT|
+                FILTER(isLiteral(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (strlen(str(?n)) AS ?length)
+            FILTER(?length<10)
+            
+          }
+          GROUP BY ?length
+          ORDER BY ?length
+        }
+        UNION
+        {
+          SELECT ?minLength (?minLength+9 AS ?maxLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                |BEFORECONSTRAINT|
+                ?s ?p ?n .
+                |AFTERCONSTRAINT|
+                FILTER(isLiteral(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (xsd:integer(floor(strlen(str(?n))/10)*10) AS ?minLength)
+            FILTER(?minLength<100)
+          }
+          GROUP BY ?minLength
+          ORDER BY ?minLength
+        }
+        UNION
+        {
+          SELECT ?minLength (?minLength+99 AS ?maxLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                |BEFORECONSTRAINT|
+                ?s ?p ?n .
+                |AFTERCONSTRAINT|
+                FILTER(isLiteral(?n))
+                |ENDGRAPH|
+              }
+            }
+            BIND (xsd:integer(floor(strlen(str(?n))/100)*100) AS ?minLength)
+            FILTER(?minLength<1000)
+          }
+          GROUP BY ?minLength
+          ORDER BY ?minLength
+          }
+          UNION
+          {
+          SELECT (1000 AS ?minLength) (COUNT(*) AS ?entities) {
+            {
+              SELECT DISTINCT ?n {
+                |BEGINGRAPH|
+                |BEFORECONSTRAINT|
+                ?s ?p ?n .
+                |AFTERCONSTRAINT|
+                FILTER(isLiteral(?n))
+                |ENDGRAPH|
+              }
+            }
+            FILTER(strlen(str(?n))>=1000)
+          }
+        }
+        FILTER (?entities>0)
+      }
+    '''
+    'Subject Class Count' : '''
+        SELECT (COUNT(DISTINCT ?type) AS ?subjectClasses) {
+          |BEGINGRAPH|
           |BEFORECONSTRAINT|
-          ?s ?p ?o .
           ?s a ?type .
+          ?s ?p ?o .
           |AFTERCONSTRAINT|
           |ENDGRAPH|
         }
@@ -196,8 +517,8 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         SELECT (COUNT(DISTINCT ?type) AS ?propertyClasses) {
           |BEGINGRAPH|
           |BEFORECONSTRAINT|
-          ?s ?p ?o .
           ?p a ?type .
+          ?s ?p ?o .
           |AFTERCONSTRAINT|
           |ENDGRAPH|
         }
@@ -206,8 +527,8 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         SELECT (COUNT(DISTINCT ?type) AS ?objectClasses) {
           |BEGINGRAPH|
           |BEFORECONSTRAINT|
-          ?s ?p ?o .
           ?o a ?type .
+          ?s ?p ?o .
           |AFTERCONSTRAINT|
           |ENDGRAPH|
         }
@@ -684,11 +1005,20 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     '''
   }
   insertQueries = {
-    'Subject Class Count' : prefixes + '''
+    'Class Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
         |DATASETTOPARTITION1|
         |PARTITIONIRI| void:classes ?classes .
+        |ENDUPDATEGRAPH|
+      } WHERE {
+        { |DATASETTOPARTITION2| }
+    '''
+    'Subject Class Count' : prefixes + '''
+      INSERT {
+        |BEGINUPDATEGRAPH|
+        |DATASETTOPARTITION1|
+        |PARTITIONIRI| void-ext:subjectClasses ?subjectClasses .
         |ENDUPDATEGRAPH|
       } WHERE {
         { |DATASETTOPARTITION2| }
@@ -813,6 +1143,50 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       } WHERE {
         { |DATASETTOPARTITION2| }
     '''
+    'Average IRI Length' : prefixes + '''
+      INSERT {
+        |BEGINUPDATEGRAPH|
+        |DATASETTOPARTITION1|
+        |PARTITIONIRI| void-ext:averageIRILength ?averageIRILength .
+        |ENDUPDATEGRAPH|
+      } WHERE {
+        { |DATASETTOPARTITION2| }
+    '''
+    'Average Literal Length' : prefixes + '''
+      INSERT {
+        |BEGINUPDATEGRAPH|
+        |DATASETTOPARTITION1|
+        |PARTITIONIRI| void-ext:averageLiteralLength ?averageLiteralLength .
+        |ENDUPDATEGRAPH|
+      } WHERE {
+        { |DATASETTOPARTITION2| }
+    '''
+    'IRI Length' : prefixes + '''
+      INSERT {
+        |BEGINUPDATEGRAPH|
+        |DATASETTOPARTITION1|
+        |PARTITIONIRI| void-ext:iriLengthPartition _:b .
+        _:b void-ext:length ?length .
+        _:b void-ext:minLength ?minLength .
+        _:b void-ext:maxLength ?maxLength .
+        _:b void:entities ?entities .
+        |ENDUPDATEGRAPH|
+      } WHERE {
+        { |DATASETTOPARTITION2| }
+    '''
+    'Literal Length' : prefixes + '''
+      INSERT {
+        |BEGINUPDATEGRAPH|
+        |DATASETTOPARTITION1|
+        |PARTITIONIRI| void-ext:literalLengthPartition _:b .
+        _:b void-ext:length ?length .
+        _:b void-ext:minLength ?minLength .
+        _:b void-ext:maxLength ?maxLength .
+        _:b void:entities ?entities .
+        |ENDUPDATEGRAPH|
+      } WHERE {
+        { |DATASETTOPARTITION2| }
+    '''
     'Subject Type' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
@@ -923,7 +1297,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       INSERT {
         |BEGINUPDATEGRAPH|
         |DATASETTOPARTITION1|
-        |PARTITIONIRI| void-ext:objectLiteralDatatypePartition _:b .
+        |PARTITIONIRI| void-ext:datatypePartition _:b .
         _:b void-ext:datatype ?datatype .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
@@ -934,7 +1308,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       INSERT {
         |BEGINUPDATEGRAPH|
         |DATASETTOPARTITION1|
-        |PARTITIONIRI| void-ext:objectLiteralLanguagePartition _:b .
+        |PARTITIONIRI| void-ext:languagePartition _:b .
         _:b void-ext:language ?language .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
@@ -958,6 +1332,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |BEGINUPDATEGRAPH|
       |DATASETIRI| a void:Dataset .
       |DATASETIRI| void:sparqlEndpoint |SPARQLENDPOINT| .
+      |GRAPHIRIINFO|
       |DATASETIRI| prov:generatedBy _:a .
       _:a a prov:Activity .
       _:a prov:startedAtTime "|STARTTIME|"^^xsd:dateTime .
@@ -1024,14 +1399,15 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         ('Object Namespace' void-ext:objectNamespacePartition void-ext:namespace)
         ('Property Type' void-ext:propertyClassPartition void:class)
         ('Object Type' void-ext:objectClassPartition void:class)
-        ('Object Datatype' void-ext:objectLiteralDatatypePartition void-ext:datatype)
-        ('Object Language' void-ext:objectLiteralLanguagePartition void-ext:language)
+        ('Object Datatype' void-ext:datatypePartition void-ext:datatype)
+        ('Object Language' void-ext:languagePartition void-ext:language)
       }
       |ENDGRAPH|
     }
   '''
   {
     generalStatQueries : [
+      'Class Count'
       'Subject Class Count'
       'Property Class Count'
       'Object Class Count'
@@ -1046,8 +1422,11 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       'Blank Node Subject Count'
       'IRI Reference Object Count'
       'Blank Node Object Count'
+      'Average IRI Length'
+      'Average Literal Length'
     ]
     generateStats : [
+      'Class Count'
       'Subject Class Count'
       'Property Class Count'
       'Object Class Count'
@@ -1062,6 +1441,10 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       'Blank Node Subject Count'
       'IRI Reference Object Count'
       'Blank Node Object Count'
+      'Average IRI Length'
+      'Average Literal Length'
+      'IRI Length'
+      'Literal Length'
       'Subject Type'
       'Subject Namespace'
       'Subject'
@@ -1094,9 +1477,10 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       .replace(/\|BEGINGRAPH\|/g,if graphIRI? && graphIRI!='' then " GRAPH <#{graphIRI}> {" else "")
       .replace(/\|ENDGRAPH\|/g,if graphIRI? && graphIRI!='' then " } " else "")
       .replace(/\|DATASETIRI\|/g,datasetIRI))
-    insertMetadata : (updateEndpoint,updateGraphIRI,endpoint,datasetIRI,startTime,ipaddress) ->
+    insertMetadata : (updateEndpoint,updateGraphIRI,endpoint,graphIRI,datasetIRI,startTime,ipaddress) ->
       sparql.update(
         updateEndpoint,insertMetadataQuery
+          .replace(/\|GRAPHIRIINFO\|/g,if graphIRI? && graphIRI!='' then "|DATASETIRI| sd:name <#{graphIRI}> ." else "")
           .replace(/\|DATASETIRI\|/g,datasetIRI)
           .replace(/\|BEGINUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " GRAPH <#{updateGraphIRI}> {" else "")
           .replace(/\|ENDUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " } " else "")
