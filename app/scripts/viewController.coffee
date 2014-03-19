@@ -342,7 +342,7 @@ angular.module('fi.seco.aether')
                 ?activity <http://www.w3.org/ns/prov#startedAtTime> ?time
               }
               OPTIONAL { ?datasetIRI <http://rdfs.org/ns/void#sparqlEndpoint> ?sparqlEndpoint . }
-              OPTIONAL { ?datasetIRI <http://www.w3.org/ns/sparql-service-description#name> ?name . }
+              OPTIONAL { ?datasetIRI <http://www.w3.org/ns/sparql-service-description#name> ?graphIRI . }
             }
           }
           ORDER BY DESC(?time)"""
