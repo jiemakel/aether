@@ -30,7 +30,7 @@ gulp.task "dist-html", [ "build" ], ->
     .pipe($.size())
     .pipe(gulp.dest("dist"))
 
-gulp.task "dist-images", ->
+gulp.task "dist-images", ["clean"], ->
   gulp.src("app/images/**/*")
     .pipe($.plumber(errorHandler: $.notify.onError("<%= error.stack %>")))
     .pipe($.cache($.imagemin(
@@ -41,7 +41,7 @@ gulp.task "dist-images", ->
     .pipe($.size())
     .pipe(gulp.dest("dist/images"))
 
-gulp.task "dist-fonts", ->
+gulp.task "dist-fonts", ["clean"], ->
   gulp.src(mainBowerFiles())
     .pipe($.plumber(errorHandler: $.notify.onError("<%= error.stack %>")))
     .pipe($.filter("**/*.{eot,svg,ttf,woff}"))
