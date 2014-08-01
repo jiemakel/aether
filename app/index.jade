@@ -1,0 +1,38 @@
+html(ng-app='fi.seco.aether')
+head
+    title(ng-bind='title') Aether
+    // build:css(app) styles/vendor.css
+    // bower:css
+    link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
+    link(rel='stylesheet', href='bower_components/nvd3/src/nv.d3.css')
+    link(rel='stylesheet', href='bower_components/components-font-awesome/css/font-awesome.css')
+    // endbower
+    // build:css(.tmp) styles/main.css
+    link(rel='stylesheet', href='styles/main.css')
+    // endbuild
+  body
+    .container(ui-view="", autoscroll='false')
+    script(type='text/javascript', src='http://l2.io/ip.js?var=user_ip_address')
+    // build:js(app) scripts/vendor.js
+    // bower:js
+    script(src='bower_components/jquery/dist/jquery.js')
+    script(src='bower_components/angular/angular.js')
+    script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
+    script(src='bower_components/d3/d3.js')
+    script(src='bower_components/nvd3/nv.d3.js')
+    script(src='bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js')
+    script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.js')
+    script(src='bower_components/angular-animate/angular-animate.js')
+    // endbower
+    // endbuild 
+    // build:js(.tmp) scripts/main.js 
+    script(src='scripts/httpthrottle/httpThrottleService.js')
+    script(src='scripts/sparql/sparqlService.js')
+    script(src='scripts/prefix/prefixService.js')
+    script(src='scripts/void/voidService.js')
+    script(src='scripts/config.js')
+    script(src='scripts/indexController.js')
+    script(src='scripts/viewController.js')
+    script(src='scripts/generateController.js')
+    script(src='scripts/generateMenuController.js')
+    // endbuild 

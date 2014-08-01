@@ -1,0 +1,38 @@
+div
+  .text-right (<a ui-sref='index'>back to main</a>)
+  h1 Aether VoID Statistics Generator
+  h4.page-header Generate statistics for
+  .form-group(ng-class='{ "has-error": !sparqlEndpointInputValid && sparqlEndpointInputHasFocus, "has-success": sparqlEndpointInputValid && sparqlEndpointInputHasFocus }')
+    label.control-label SPARQL Endpoint:
+    input.form-control(type='text', ng-model='sparqlEndpointInput', ng-blur='sparqlEndpoint = sparqlEndpointInputValid ? sparqlEndpointInput : sparqlEndpoint ; sparqlEndpointInputHasFocus = !sparqlEndpointInputValid', ng-focus='sparqlEndpointInputHasFocus = true')
+  .form-group
+    label.control-label Graph:
+    div(ng-class='graphIRIFetching && "input-group"')
+      select.form-control(ng-model='graphIRI', ng-readonly='graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default")+" ("+(graph.triples.value | number)+" triples)" for graph in graphs')
+      span.input-group-addon(ng-show='graphIRIFetching')
+        i.glyphicon.glyphicon-refresh.fa-spin
+  h4.page-header Store statistics in
+  .form-group(ng-class='{ "has-error": !sparulEndpointInputValid && sparulEndpointInputHasFocus, "has-success": sparulEndpointInputValid && sparulEndpointInputHasFocus }')
+    label.control-label SPARUL Endpoint:
+    input.form-control(type='text', ng-model='sparulEndpointInput', ng-blur='sparulEndpoint = sparulEndpointInputValid ? sparulEndpointInput : sparulEndpoint; sparulEndpointInputHasFocus = !sparulEndpointInputValid', ng-focus='sparulEndpointInputHasFocus = true')
+  .form-group
+    label.control-label Graph:
+    input.form-control(type='text', ng-model='updateGraphIRI', placeholder='default')
+  .form-group
+    label.control-label IRI for Dataset:
+    input.form-control(type='text', ng-model='datasetIRI')
+  .checkbox
+    label.control-label
+      input(ng-model='doSelections', type='checkbox')
+      | Calculate statistics for all partitions (allows viewing graphs for each partition but takes much longer)
+  .form-group
+    button.btn.btn-default(ng-disabled='datasetIRI==null || sparulEndpoint == null || sparqlEndpoint == null', type='submit', ui-sref='generate({doSelections:doSelections,sparqlEndpoint:sparqlEndpoint,sparulEndpoint:sparulEndpoint,datasetIRI:datasetIRI,graphIRI:graphIRI,updateGraphIRI:updateGraphIRI})') Generate
+  .row
+    .alert.alert-block.alert-danger(ng-repeat='error in errors')
+      | {{error.errorSource}} returned error {{error.errorStatus}}:
+      br
+      | {{error.error}}
+      br
+      | for query:
+      br
+      | {{error.query}}

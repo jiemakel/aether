@@ -1,5 +1,3 @@
-'use strict'
-
 angular.module('fi.seco.aether')
   .controller('GenerateCtrl', ($stateParams,$window,$scope,$modal,$timeout,sparql,voidService) ->
     $scope.Math=$window.Math

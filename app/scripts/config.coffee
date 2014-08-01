@@ -1,5 +1,3 @@
-'use strict'
-
 angular.module('fi.seco.httpthrottle').value('maxRequests',8)
 
 angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
@@ -27,7 +25,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
     ])
     $stateProvider.state('view', {
       url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&limitStat&limitObject'
-      templateUrl: 'views/view.html'
+      templateUrl: 'partials/view.html'
       controller:'ViewCtrl'
       reloadOnSearch: false
       onEnter: ['$rootScope', ($rootScope) ->
@@ -36,7 +34,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
     })
     $stateProvider.state('index', {
       url: '/'
-      templateUrl: 'views/index.html'
+      templateUrl: 'partials/index.html'
       controller:'IndexCtrl'
       onEnter: ['$rootScope', ($rootScope) ->
         $rootScope.title = "Aether VoID Statistics Tool";
@@ -44,7 +42,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
     })
     $stateProvider.state('generate', {
       url: '/generate?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doSelections'
-      templateUrl: 'views/generate.html'
+      templateUrl: 'partials/generate.html'
       controller:'GenerateCtrl'
       onEnter: ['$rootScope', ($rootScope) ->
         $rootScope.title = "Aether VoID Statistics Generator";
@@ -52,7 +50,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
     })
     $stateProvider.state('generate-menu', {
       url: '/generate-menu?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI'
-      templateUrl: 'views/generateMenu.html'
+      templateUrl: 'partials/generateMenu.html'
       controller:'GenerateMenuCtrl'
       reloadOnSearch: false
       onEnter: ['$rootScope', ($rootScope) ->

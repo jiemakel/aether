@@ -1,5 +1,3 @@
-'use strict'
-
 angular.module('fi.seco.aether')
   .controller('GenerateMenuCtrl', ($q,$scope,$location,$stateParams,sparql) ->
     $scope.errors=[]
