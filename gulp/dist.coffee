@@ -27,7 +27,6 @@ gulp.task "dist-html", [ "build" ], ->
     .pipe($.useref.restore())
     .pipe($.useref())
     .pipe($.revReplace())
-    .pipe($.filelog())
     .pipe($.size())
     .pipe(gulp.dest("dist"))
 
@@ -39,7 +38,7 @@ gulp.task "dist-images", ->
       progressive: true
       interlaced: true
     )))
-    .pipe $.size()    
+    .pipe($.size())
     .pipe(gulp.dest("dist/images"))
 
 gulp.task "dist-fonts", ->
