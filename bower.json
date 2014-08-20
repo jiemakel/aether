@@ -9,7 +9,8 @@
     "angularjs-nvd3-directives": "latest",
     "angular-bootstrap": "latest",
     "angular-animate": "latest",
-    "components-font-awesome": "latest"
+    "components-font-awesome": "latest",
+    "angular-http-auth": "~1.2.1"
   },
   "devDependencies": {
     "angular-mocks": "*",

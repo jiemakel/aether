@@ -1,43 +1,50 @@
-div
-  h1 Aether VoID Statistics Generator
-  h3
-    span.glyphicon.glyphicon-time
-    | Progress for {{datasetIRI}}
-  p
-    | Time since start: {{Math.floor(((curTime - startTime) / 1000) / (60 * 60)) | number: 0}}:{{Math.floor(((curTime - startTime) / 1000) % (60 * 60) / 60) | number: 0}}:{{((curTime - startTime) / 1000) % 60 | number: 0}}
-  small
-    em Total Queries
-  progress(ng-class='{ "progress-striped" : (total.processed+total.errors)<total.total, "active": (total.processed+total.errors)<total.total }')
-    bar(value='100*total.processed/total.total', type='{{ (total.processed+total.errors)==total.total && "success" || "info" }}')
-      span(style='color:black; white-space:nowrap;') {{ total.processed || 0 }}/{{ total.total || '?' }}
-    bar(value='100*total.errors/total.total', type='danger', ng-show='total.errors>0')
-      span(style='color:black; white-space:nowrap;') {{ total.errors }}
-  | At any time, you may view the statistics already generated <a target='_blank', ui-sref='view({sparqlEndpoint:sparqlEndpoint,graphIRI:graphIRI,datasetIRI:datasetIRI})'>here</a>
-  | , with the rest calculated dynamically.
-  h4 Main Statistics
-    span.glyphicon(ng-class='{ "glyphicon-ok" : main.processed==main.total, "text-success" : main.processed==main.total, "text-danger" : main.errors>0, "glyphicon-remove" : main.errors>0}')
+h1 Aether VoID Statistics Generator
+h3
+  span.glyphicon.glyphicon-time
+  | Progress for {{datasetIRI}}
+p
+  | Time since start: {{Math.floor(((curTime - startTime) / 1000) / (60 * 60)) | number: 0}}:{{Math.floor(((curTime - startTime) / 1000) % (60 * 60) / 60) | number: 0}}:{{((curTime - startTime) / 1000) % 60 | number: 0}}
+small
+  em Total Queries
+progress(ng-class='{ "progress-striped" : (total.processed+total.errors)<total.total, "active": (total.processed+total.errors)<total.total }')
+  bar(value='100*total.processed/total.total', type='{{ (total.processed+total.errors)==total.total && "success" || "info" }}')
+    span(style='color:black; white-space:nowrap;') {{ total.processed || 0 }}/{{ total.total || '?' }}
+  bar(value='100*total.errors/total.total', type='danger', ng-show='total.errors>0')
+    span(style='color:black; white-space:nowrap;') {{ total.errors }}
+| At any time, you may view the statistics already generated <a target='_blank', ui-sref='view({sparqlEndpoint:sparqlEndpoint,graphIRI:graphIRI,datasetIRI:datasetIRI})'>here</a>, with the rest calculated dynamically.
+h4 Main Statistics
+  span.glyphicon(ng-class='{ "glyphicon-ok" : main.processed==main.total, "text-success" : main.processed==main.total, "text-danger" : main.errors>0, "glyphicon-remove" : main.errors>0}')
+.row
+  .col-sm-3(ng-repeat='statName in stats')
+    small
+      em {{statName}}:
+      span.glyphicon(ng-class='{ "glyphicon-ok" : statStatus[statName]=="ok", "text-success" : statStatus[statName]=="ok", "text-danger" : statStatus[statName]=="error", "glyphicon-remove" : statStatus[statName]=="error"}')
+div(ng-if='doAllSingleSelections || doSchemaSelections')
+  h4 Statistics for Partitions
   .row
-    .col-sm-3(ng-repeat='statName in stats')
+    .col-sm-2(ng-repeat='statName in (doAllSingleSelections ? partitionStats : schemaStats)')
       small
-        em {{statName}}:
-        span.glyphicon(ng-class='{ "glyphicon-ok" : statStatus[statName]=="ok", "text-success" : statStatus[statName]=="ok", "text-danger" : statStatus[statName]=="error", "glyphicon-remove" : statStatus[statName]=="error"}')
-  div(ng-show='doSelections')
-    h4 Statistics for Partitions
-    .row
-      .col-sm-2(ng-repeat='statName in stats | filter:statFilter()')
-        small
-          em {{statName}}
-        progress(ng-class='{ "progress-striped" : (subStatStatus[statName].processed+subStatStatus[statName].errors)<subStatStatus[statName].total, "active": (subStatStatus[statName].processed+subStatStatus[statName].errors)<subStatStatus[statName].total }')
-          bar(value='100*subStatStatus[statName].processed/subStatStatus[statName].total', type='{{ (subStatStatus[statName].processed+subStatStatus[statName].errors)==subStatStatus[statName].total && "success" || "info" }}')
-            span(style='color:black; white-space:nowrap;') {{ subStatStatus[statName].processed || 0 }}/{{ subStatStatus[statName].total || '?' }}
-          bar(value='100*subStatStatus[statName].errors/subStatStatus[statName].total', type='danger', ng-show='subStatStatus[statName].errors>0')
-            span(style='color:black; white-space:nowrap;') {{ subStatStatus[statName].errors }}
-  .clearfix
-  .alert.alert-block.alert-danger(ng-repeat='error in errors')
-    | {{error.errorSource}} returned error {{error.errorStatus}}:
-    br
-    | {{error.error}}
-    br
-    | for query:
-    br
-    | {{error.query}}
+        em {{statName}}
+      progress(ng-class='((subStatStatus[statName].processed+subStatStatus[statName].errors)<subStatStatus[statName].total) ? "active progress-striped" : ""')
+        bar(value='100*subStatStatus[statName].processed/subStatStatus[statName].total', type='{{ (subStatStatus[statName].processed+subStatStatus[statName].errors)==subStatStatus[statName].total && "success" || "info" }}')
+          span(style='color:black; white-space:nowrap;') {{ subStatStatus[statName].processed || 0 }}/{{ subStatStatus[statName].total || '?' }}
+        bar(value='100*subStatStatus[statName].errors/subStatStatus[statName].total', type='danger', ng-show='subStatStatus[statName].errors>0')
+          span(style='color:black; white-space:nowrap;') {{ subStatStatus[statName].errors }}
+  .row(ng-if='doSchemaSelections')
+    .col-sm-3(ng-repeat='sstatName in sschemaStats')
+      small
+        em {{sstatName}} &amp; Property
+      progress(ng-class='((subStatStatus[sstatName].processed+subStatStatus[sstatName].errors)<subStatStatus[sstatName].total || (subStatStatus.Property.processed+subStatStatus.Property.errors)<subStatStatus.Property.total || (subStatStatus["Property-"+sstatName].processed+subStatStatus["Property-"+sstatName].errors)<subStatStatus["Property-"+sstatName].total) ? "active progress-striped" : ""')
+        bar(value='100*subStatStatus["Property-"+sstatName].processed/subStatStatus["Property-"+sstatName].total', type='{{ (subStatStatus.Property.processed+subStatStatus.Property.errors)==subStatStatus.Property.total && (subStatStatus[statName].processed+subStatStatus[statName].errors)==subStatStatus[statName].total && (subStatStatus["Property-"+sstatName].processed+subStatStatus["Property-"+sstatName].errors)==subStatStatus["Property-"+sstatName].total && "success" || "info" }}')
+          span(style='color:black; white-space:nowrap;') {{ subStatStatus["Property-"+sstatName].processed || 0 }}/{{ subStatStatus["Property-"+sstatName].total + (((subStatStatus[sstatName].processed+subStatStatus[sstatName].errors)==subStatStatus[sstatName].total && (subStatStatus.Property.processed+subStatStatus.Property.errors)==subStatStatus.Property.total) ? "" : "?") || '?' }}
+        bar(value='100*subStatStatus["Property-"+sstatName].errors/subStatStatus["Property-"+sstatName].total', type='danger', ng-show='subStatStatus["Property-"+sstatName].errors>0')
+          span(style='color:black; white-space:nowrap;') {{ subStatStatus["Property-"+sstatName].errors }}
+.clearfix
+.alert.alert-block.alert-danger(ng-repeat='error in errors')
+  | {{error.errorSource}} returned error {{error.errorStatus}}:
+  br
+  | {{error.error}}
+  br
+  | for query:
+  br
+  | {{error.query}}

@@ -6,23 +6,38 @@ html(ng-app='fi.seco.aether')
     link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
     link(rel='stylesheet', href='bower_components/nvd3/src/nv.d3.css')
     link(rel='stylesheet', href='bower_components/components-font-awesome/css/font-awesome.css')
-    // endbower
+    // endbower 
     // build:css(.tmp) styles/main.css
     link(rel='stylesheet', href='styles/main.css')
     // endbuild
   body
-    .container(ui-view="", autoscroll='false')
+    script(type="text/ng-template" id="login.html")
+      .modal-header: h3.modal-title Authentication required
+      form
+        .modal-body
+          .form-group
+            label.control-label Username:
+            input.form-control(type='text', ng-model="username")
+          .form-group
+            label.control-label Password:
+            input.form-control(type='password', ng-model="password")
+        .modal-footer
+          button.btn.btn-primary(ng-click="$close({password:password,username:username})") Ok
+          button.btn.btn-warning(ng-click="$dismiss()") Cancel    
+    .container-fluid(ui-view="", autoscroll='false')
     script(type='text/javascript', src='http://l2.io/ip.js?var=user_ip_address')
     // build:js(app) scripts/vendor.js
     // bower:js
     script(src='bower_components/jquery/dist/jquery.js')
     script(src='bower_components/angular/angular.js')
+    script(src='bower_components/bootstrap/dist/js/bootstrap.js')
     script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
     script(src='bower_components/d3/d3.js')
     script(src='bower_components/nvd3/nv.d3.js')
     script(src='bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js')
     script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.js')
     script(src='bower_components/angular-animate/angular-animate.js')
+    script(src='bower_components/angular-http-auth/src/http-auth-interceptor.js')
     // endbower
     // endbuild 
     // build:js(.tmp) scripts/main.js 

@@ -1,6 +1,15 @@
 angular.module('fi.seco.httpthrottle').value('maxRequests',8)
 
-angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
+angular.module('fi.seco.aether', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
+  .run ($rootScope,$modal,$http,authService) ->
+    $rootScope.$on 'event:auth-loginRequired', ->
+      $modal.open({
+        templateUrl:'login.html'
+      }).result.then (auth) ->
+        $rootScope.username = auth.username
+        $rootScope.password = auth.password
+        $http.defaults.headers.common['Authorization'] = 'Basic '+btoa(auth.username+':'+auth.password)
+        authService.loginConfirmed()
   .config ($stateProvider, $urlRouterProvider) ->
     $urlRouterProvider.otherwise('/')
     $urlRouterProvider.when('/latest?voidEndpoint&voidGraphIRI&graphIRI&sparqlEndpoint', ['$match', 'sparql', '$state', ($match, sparql, $state) ->
@@ -24,7 +33,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
       )
     ])
     $stateProvider.state('view', {
-      url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&limitStat&limitObject'
+      url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&subjectLimitStat&subjectLimitValue&propertyLimitStat&propertyLimitValue&objectLimitStat&objectLimitValue'
       templateUrl: 'partials/view.html'
       controller:'ViewCtrl'
       reloadOnSearch: false
@@ -41,7 +50,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
       ]
     })
     $stateProvider.state('generate', {
-      url: '/generate?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doSelections'
+      url: '/generate?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doAllSingleSelections&doSchemaSelections'
       templateUrl: 'partials/generate.html'
       controller:'GenerateCtrl'
       onEnter: ['$rootScope', ($rootScope) ->
@@ -49,7 +58,7 @@ angular.module('fi.seco.aether', [ 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nv
       ]
     })
     $stateProvider.state('generate-menu', {
-      url: '/generate-menu?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI'
+      url: '/generate-menu?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doAllSingleSelections&doSchemaSelections'
       templateUrl: 'partials/generateMenu.html'
       controller:'GenerateMenuCtrl'
       reloadOnSearch: false

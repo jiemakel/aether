@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('fi.seco.prefix',[]).factory('prefixService', () ->
+angular.module('fi.seco.prefix',[]).factory('prefixService', ->
   prefixNsMap = {
     "yago": "http:\/\/yago-knowledge.org\/resource\/",
     "rdf": "http:\/\/www.w3.org\/1999\/02\/22-rdf-syntax-ns#",
@@ -1196,9 +1196,8 @@ angular.module('fi.seco.prefix',[]).factory('prefixService', () ->
     "bwb": "http:\/\/doc.metalex.eu\/bwb\/ontology\/",
     "bihap": "http:\/\/bihap.kb.gov.tr\/ontology\/"
   }
-  nsPrefixMap = new ->
-    @[ns] = prefix for prefix, ns of prefixNsMap when !@[ns]?
-    this
+  nsPrefixMap = {}
+  for prefix, ns of prefixNsMap then nsPrefixMap[ns]=prefix
   newNss = 0
   seenPrefixNsMap = {}
   getLastSplit = (string,pos) ->
@@ -1230,8 +1229,10 @@ angular.module('fi.seco.prefix',[]).factory('prefixService', () ->
         pos = getLastSplit(uri,uri.length)
         pos2 = getLastSplit(uri,pos-1)
         if (pos2!=-1)
-          newPrefix = uri.substring(pos2+1,pos)
-          if (prefixNsMap[newPrefix]) then newPrefix = "ns"+(++newNss)
+          newPrefixO = uri.substring(pos2+1,pos)
+          newPrefix = newPrefixO
+          nss = 1
+          while (prefixNsMap[newPrefix]) then newPrefix = newPrefixO+(++nss)
         else
           newPrefix = "ns"+(++newNss)
         newNs = uri.substring(0,pos+1)
@@ -1240,7 +1241,7 @@ angular.module('fi.seco.prefix',[]).factory('prefixService', () ->
         seenPrefixNsMap[newPrefix]=newNs
         return newPrefix+':'+uri.substring(pos+1)
       iuri
-    getSeenPrefixNsMap : () ->
+    getSeenPrefixNsMap : ->
       return seenPrefixNsMap
   }
 )

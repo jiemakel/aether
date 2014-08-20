@@ -21,58 +21,60 @@ div
             li
               a(href='', ng-click='scrollTo("namespace")') Namespace Information
             li
-              a(href='', ng-click='scrollTo("property")') Property Information
-            li
-              a(href='', ng-click='scrollTo("resourceObject")') Resource Object Information
-            li
-              a(href='', ng-click='scrollTo("literalObject")') Literal Object Information
-            li
-              a(href='', ng-click='scrollTo("subject")') Subject Information
+              a(href='', ng-click='scrollTo("triple")') Triple Information
       form.navbar-form.navbar-right(role='search')
         span.label.label-warning(ng-show='queries>0', style='margin-right:10px')
           span.glyphicon.glyphicon-refresh.fa-spin
-          | {{queries}} queries running..
+          |  {{queries}} queries running..
         .form-group
           label.control-label Limit to:
-          select.form-control.limitSelector(style='max-width:400px', ng-model='limit', ng-options='limit.limitName group by limit.limitStat for limit in limits')
-            option(value='') all triples
+          select.form-control.limitSelector(style='max-width:200px', ng-model='limits.subject', ng-options='limit.name group by limit.stat for limit in availableLimits.subject')
+            option(value='') all subjects
+          select.form-control.limitSelector(style='max-width:200px', ng-model='limits.property', ng-options='limit.name group by limit.stat for limit in availableLimits.property')
+            option(value='') all properties
+          select.form-control.limitSelector(style='max-width:200px', ng-model='limits.object', ng-options='limit.name group by limit.stat for limit in availableLimits.object')
+            option(value='') all objects
   .text-right (<a ui-sref='index'>back to main</a>)
-  h1: a#top.displaced-anchor Aether VoID Statistics Viewer
+  h1 
+    a#top.displaced-anchor 
+    | Aether VoID Statistics Viewer
   .col-sm-6
     h3 View statistics for:
-    .form-group(ng-class='{ "has-error": !sparqlEndpointInputValid && sparqlEndpointInputHasFocus, "has-success": sparqlEndpointInputValid && sparqlEndpointInputHasFocus }')
+    .form-group(ng-class='{ "has-error": !main.sparqlEndpointInputValid && main.sparqlEndpointInputHasFocus, "has-success": main.sparqlEndpointInputValid && main.sparqlEndpointInputHasFocus }')
       label.control-label SPARQL Endpoint:
-      input.form-control(type='text', ng-model='sparqlEndpointInput', ng-blur='sparqlEndpoint = sparqlEndpointInputValid ? sparqlEndpointInput : sparqlEndpoint ; sparqlEndpointInputHasFocus = !sparqlEndpointInputValid', ng-focus='sparqlEndpointInputHasFocus = true')
+      i.glyphicon.glyphicon-info-sign.pull-right(tooltip-placement="left",tooltip="If your endpoint isn't working, it may not be setting appropriate CORS headers. If so, you can try it with 'http://ldf.fi/corsproxy/'' prepended (e.g. http://ldf.fi/corsproxy/dbpedia.org/sparql)")
+      input.form-control(type='text', ng-model='main.sparqlEndpointInput', ng-blur='main.sparqlEndpoint = main.sparqlEndpointInputValid ? main.sparqlEndpointInput : main.sparqlEndpoint ; main.sparqlEndpointInputHasFocus = !main.sparqlEndpointInputValid', ng-focus='main.sparqlEndpointInputHasFocus = true')
     .form-group
       label.control-label Graph:
-      div(ng-class='graphIRIFetching && "input-group"')
-        select.form-control(ng-model='graphIRI', ng-readonly='graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples.value | number) + " triples)" for graph in graphs')
-        span.input-group-addon(ng-show='graphIRIFetching')
+      div(ng-class='main.graphIRIFetching && "input-group"')
+        select.form-control(ng-model='main.graphIRI', ng-readonly='main.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples.value | number) + " triples)" for graph in main.graphs')
+        span.input-group-addon(ng-show='main.graphIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
     .form-group
       label.control-label Dataset:
-      div(ng-class='datasetIRIFetching && "input-group"')
-        select.form-control(ng-model='datasetIRI', ng-readonly='datasetIRIFetching', ng-options='dataset.datasetIRI.value as dataset.datasetIRI.value for dataset in datasets')
+      div(ng-class='main.datasetIRIFetching && "input-group"')
+        select.form-control(ng-model='main.datasetIRI', ng-readonly='main.datasetIRIFetching', ng-options='dataset.datasetIRI.value as dataset.datasetIRI.value for dataset in main.datasets')
           option(value='') endpoint itself
-        span.input-group-addon(ng-show='datasetIRIFetching')
+        span.input-group-addon(ng-show='main.datasetIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
   .col-sm-6
     h3 Compare against:
-    .form-group(ng-class='{ "has-error": !compar_sparqlEndpointInputValid && compar_sparqlEndpointInputHasFocus, "has-success": compare_sparqlEndpointInputValid && compare_sparqlEndpointInputHasFocus }')
+    .form-group(ng-class='{ "has-error": !compare.sparqlEndpointInputValid && compare.sparqlEndpointInputHasFocus, "has-success": compare.sparqlEndpointInputValid && compare.sparqlEndpointInputHasFocus }')
       label.control-label SPARQL Endpoint:
-      input.form-control(type='text', ng-model='compare_sparqlEndpointInput', ng-blur='compare_sparqlEndpoint = compare_sparqlEndpointInputValid ? compare_sparqlEndpointInput : compare_sparqlEndpoint ; compare_sparqlEndpointInputHasFocus = !compare_sparqlEndpointInputValid', ng-focus='compare_sparqlEndpointInputHasFocus = true')
+      i.glyphicon.glyphicon-info-sign.pull-right(tooltip-placement="left",tooltip="If your endpoint isn't working, it may not be setting appropriate CORS headers. If so, you can try it with 'http://ldf.fi/corsproxy/'' prepended (e.g. http://ldf.fi/corsproxy/dbpedia.org/sparql)")
+      input.form-control(type='text', ng-model='compare.sparqlEndpointInput', ng-blur='compare.sparqlEndpoint = compare.sparqlEndpointInputValid ? compare.sparqlEndpointInput : compare.sparqlEndpoint ; compare.sparqlEndpointInputHasFocus = !compare.sparqlEndpointInputValid', ng-focus='compare.sparqlEndpointInputHasFocus = true')
     .form-group
       label.control-label Graph:
-      div(ng-class='compare_graphIRIFetching && "input-group"')
-        select.form-control(ng-model='compare_graphIRI', ng-readonly='compare_graphIRIFetching', ng-options='compare_graph.graphIRI.value as (compare_graph.graphIRI.value || "default") + " (" + ((compare_graph.datasets.value>0 && (compare_graph.datasets.value | number)+" VoID descriptions, ") || "") + (compare_graph.triples.value | number) + " triples)" for compare_graph in compare_graphs')
-        span.input-group-addon(ng-show='compare_graphIRIFetching')
+      div(ng-class='compare.graphIRIFetching && "input-group"')
+        select.form-control(ng-model='compare.graphIRI', ng-readonly='compare.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples.value | number) + " triples)" for graph in compare.graphs')
+        span.input-group-addon(ng-show='compare.graphIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
     .form-group
       label.control-label Dataset:
-      div(ng-class='compare_datasetIRIFetching && "input-group"')
-        select.form-control(ng-model='compare_datasetIRI', ng-readonly='compare_datasetIRIFetching', ng-options='compare_dataset.datasetIRI.value as compare_dataset.datasetIRI.value for compare_dataset in compare_datasets')
+      div(ng-class='compare.datasetIRIFetching && "input-group"')
+        select.form-control(ng-model='compare.datasetIRI', ng-readonly='compare.datasetIRIFetching', ng-options='dataset.datasetIRI.value as dataset.datasetIRI.value for dataset in compare.datasets')
           option(value='') endpoint itself
-        span.input-group-addon(ng-show='compare_datasetIRIFetching')
+        span.input-group-addon(ng-show='compare.datasetIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
   .text-center(style='position:relative;top:-120px;height:1em')
     a.glyphicon.glyphicon-transfer(href='', ng-click='switchCompare()')
@@ -85,8 +87,10 @@ div
     | for query:
     br
     | {{error.query}}
-  .page-header: h2: a#general.displaced-anchor General Statistics
-  .col-sm-4
+  .page-header: h2
+    a#general.displaced-anchor 
+    | General Statistics
+  .col-sm-4.col-lg-3
     a#general-general.displaced-anchor
     table.table.table-hover.table-condensed
       caption General Statistics
@@ -97,14 +101,14 @@ div
         tr
           th.text-right Triples:
           td.text-right
-            | {{ (results.triples | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.triples>compare_results.triples ? "+": ""}}{{results.triples-compare_results.triples | number}} ({{Math.abs(results.triples-compare_results.triples)*100/compare_results.triples | number:2}}%)', ng-class='{ "text-success" : results.triples>compare_results.triples, "glyphicon-chevron-up": results.triples>compare_results.triples, "text-danger": results.triples<compare_results.triples,"glyphicon-chevron-down":results.triples<compare_results.triples}')
+            | {{ (main.stats.general.triples | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.triples>compare.stats.general.triples ? "+": ""}}{{main.stats.general.triples-compare.stats.general.triples | number}} ({{Math.abs(main.stats.general.triples-compare.stats.general.triples)*100/compare.stats.general.triples | number:2}}%)', ng-class='main.stats.general.triples>compare.stats.general.triples ? "text-success glyphicon-chevron-up" : main.stats.general.triples<compare.stats.general.triples ? "text-danger glyphicon-chevron-down" : ""')
         tr
           th.text-right RDF Nodes:
           td.text-right
-            | {{ (results.distinctRDFNodes | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.distinctRDFNodes>compare_results.distinctRDFNodes ? "+": ""}}{{results.distinctRDFNodes-compare_results.distinctRDFNodes | number}} ({{Math.abs(results.distinctRDFNodes-compare_results.distinctRDFNodes)*100/compare_results.distinctRDFNodes | number:2}}%)', ng-class='{ "text-success" : results.distinctRDFNodes>compare_results.distinctRDFNodes, "glyphicon-chevron-up": results.distinctRDFNodes>compare_results.distinctRDFNodes, "text-danger": results.distinctRDFNodes<compare_results.distinctRDFNodes,"glyphicon-chevron-down":results.distinctRDFNodes<compare_results.distinctRDFNodes}')
-  .col-sm-4
+            | {{ (main.stats.general.distinctRDFNodes | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes ? "+": ""}}{{main.stats.general.distinctRDFNodes-compare.stats.general.distinctRDFNodes | number}} ({{Math.abs(main.stats.general.distinctRDFNodes-compare.stats.general.distinctRDFNodes)*100/compare.stats.general.distinctRDFNodes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes, "glyphicon-chevron-up": main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes, "text-danger": main.stats.general.distinctRDFNodes<compare.stats.general.distinctRDFNodes,"glyphicon-chevron-down":main.stats.general.distinctRDFNodes<compare.stats.general.distinctRDFNodes}')
+  .col-sm-4.col-lg-3
     a#triple-parts.displaced-anchor
     table.table.table-hover.table-condensed
       caption Distinct Triple Parts
@@ -115,98 +119,47 @@ div
         tr
           th.text-right Subjects:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (results.triples / results.distinctSubjects) | number:2 }} triples/subject. {{ ((results.distinctSubjects)*100/(results.distinctBlankNodes+results.distinctIRIReferences)) | number:2 }}% of resources appear as subjects.') {{ (results.distinctSubjects | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.distinctSubjects>compare_results.distinctSubjects ? "+": ""}}{{results.distinctSubjects-compare_results.distinctSubjects | number}} ({{Math.abs(results.distinctSubjects-compare_results.distinctSubjects)*100/compare_results.distinctSubjects | number:2}}%)', ng-class='{ "text-success" : results.distinctSubjects>compare_results.distinctSubjects, "glyphicon-chevron-up": results.distinctSubjects>compare_results.distinctSubjects, "text-danger": results.distinctSubjects<compare_results.distinctSubjects,"glyphicon-chevron-down":results.distinctSubjects<compare_results.distinctSubjects}')
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctSubjects) | number:2 }} triples/subject. {{ ((main.stats.general.distinctSubjects)*100/(main.stats.general.distinctBlankNodes+main.stats.general.distinctIRIReferences)) | number:2 }}% of resources appear as subjects.') {{ (main.stats.general.distinctSubjects | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects ? "+": ""}}{{main.stats.general.distinctSubjects-compare.stats.general.distinctSubjects | number}} ({{Math.abs(main.stats.general.distinctSubjects-compare.stats.general.distinctSubjects)*100/compare.stats.general.distinctSubjects | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects, "glyphicon-chevron-up": main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects, "text-danger": main.stats.general.distinctSubjects<compare.stats.general.distinctSubjects,"glyphicon-chevron-down":main.stats.general.distinctSubjects<compare.stats.general.distinctSubjects}')
         tr
           th.text-right Properties:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (results.triples / results.properties) | number:2 }} triples/property') {{ (results.properties | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.properties>compare_results.properties ? "+": ""}}{{results.properties-compare_results.properties | number}} ({{Math.abs(results.properties-compare_results.properties)*100/compare_results.properties | number:2}}%)', ng-class='{ "text-success" : results.properties>compare_results.properties, "glyphicon-chevron-up": results.properties>compare_results.properties, "text-danger": results.properties<compare_results.properties,"glyphicon-chevron-down":results.properties<compare_results.properties}')
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.properties) | number:2 }} triples/property') {{ (main.stats.general.properties | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.properties>compare.stats.general.properties ? "+": ""}}{{main.stats.general.properties-compare.stats.general.properties | number}} ({{Math.abs(main.stats.general.properties-compare.stats.general.properties)*100/compare.stats.general.properties | number:2}}%)', ng-class='{ "text-success" : main.stats.general.properties>compare.stats.general.properties, "glyphicon-chevron-up": main.stats.general.properties>compare.stats.general.properties, "text-danger": main.stats.general.properties<compare.stats.general.properties,"glyphicon-chevron-down":main.stats.general.properties<compare.stats.general.properties}')
         tr
           th.text-right Objects:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (results.triples / results.distinctObjects) | number:2 }} triples/object. {{ ((results.distinctObjects)*100/(results.distinctRDFNodes)) | number:2 }}% of RDF nodes appear as objects.') {{ (results.distinctObjects | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.distinctObjects>compare_results.distinctObjects ? "+": ""}}{{results.distinctObjects-compare_results.distinctObjects | number}} ({{Math.abs(results.distinctObjects-compare_results.distinctObjects)*100/compare_results.distinctObjects | number:2}}%)', ng-class='{ "text-success" : results.distinctObjects>compare_results.distinctObjects, "glyphicon-chevron-up": results.distinctObjects>compare_results.distinctObjects, "text-danger": results.distinctObjects<compare_results.distinctObjects,"glyphicon-chevron-down":results.distinctObjects<compare_results.distinctObjects}')
-  .col-sm-4
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctObjects) | number:2 }} triples/object. {{ ((main.stats.general.distinctObjects)*100/(main.stats.general.distinctRDFNodes)) | number:2 }}% of RDF nodes appear as objects.') {{ (main.stats.general.distinctObjects | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctObjects>compare.stats.general.distinctObjects ? "+": ""}}{{main.stats.general.distinctObjects-compare.stats.general.distinctObjects | number}} ({{Math.abs(main.stats.general.distinctObjects-compare.stats.general.distinctObjects)*100/compare.stats.general.distinctObjects | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctObjects>compare.stats.general.distinctObjects, "glyphicon-chevron-up": main.stats.general.distinctObjects>compare.stats.general.distinctObjects, "text-danger": main.stats.general.distinctObjects<compare.stats.general.distinctObjects,"glyphicon-chevron-down":main.stats.general.distinctObjects<compare.stats.general.distinctObjects}')
+  .col-sm-4.col-lg-3
     a#classes.displaced-anchor
     table.table.table-hover.table-condensed
       caption Classes
       colgroup
-        col.col-sm-3
+        col.col-sm-6
         col.col-sm-2
       tbody
         tr
           th.text-right Subject Classes:
           td.text-right
-            | {{ (results.subjectClasses | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.subjectClasses>compare_results.subjectClasses ? "+": ""}}{{results.subjectClasses-compare_results.subjectClasses | number}} ({{Math.abs(results.subjectClasses-compare_results.subjectClasses)*100/compare_results.subjectClasses | number:2}}%)', ng-class='{ "text-success" : results.subjectClasses>compare_results.subjectClasses, "glyphicon-chevron-up": results.subjectClasses>compare_results.subjectClasses, "text-danger": results.subjectClasses<compare_results.subjectClasses,"glyphicon-chevron-down":results.subjectClasses<compare_results.subjectClasses}')
+            | {{ (main.stats.general.subjectClasses | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.subjectClasses>compare.stats.general.subjectClasses ? "+": ""}}{{main.stats.general.subjectClasses-compare.stats.general.subjectClasses | number}} ({{Math.abs(main.stats.general.subjectClasses-compare.stats.general.subjectClasses)*100/compare.stats.general.subjectClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.subjectClasses>compare.stats.general.subjectClasses, "glyphicon-chevron-up": main.stats.general.subjectClasses>compare.stats.general.subjectClasses, "text-danger": main.stats.general.subjectClasses<compare.stats.general.subjectClasses,"glyphicon-chevron-down":main.stats.general.subjectClasses<compare.stats.general.subjectClasses}')
         tr
           th.text-right Property Classes:
           td.text-right
-            | {{ (results.propertyClasses | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.propertyClasses>compare_results.propertyClasses ? "+": ""}}{{results.propertyClasses-compare_results.propertyClasses | number}} ({{Math.abs(results.propertyClasses-compare_results.propertyClasses)*100/compare_results.propertyClasses | number:2}}%)', ng-class='{ "text-success" : results.propertyClasses>compare_results.propertyClasses, "glyphicon-chevron-up": results.propertyClasses>compare_results.propertyClasses, "text-danger": results.propertyClasses<compare_results.propertyClasses,"glyphicon-chevron-down":results.propertyClasses<compare_results.propertyClasses}')
+            | {{ (main.stats.general.propertyClasses | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.propertyClasses>compare.stats.general.propertyClasses ? "+": ""}}{{main.stats.general.propertyClasses-compare.stats.general.propertyClasses | number}} ({{Math.abs(main.stats.general.propertyClasses-compare.stats.general.propertyClasses)*100/compare.stats.general.propertyClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.propertyClasses>compare.stats.general.propertyClasses, "glyphicon-chevron-up": main.stats.general.propertyClasses>compare.stats.general.propertyClasses, "text-danger": main.stats.general.propertyClasses<compare.stats.general.propertyClasses,"glyphicon-chevron-down":main.stats.general.propertyClasses<compare.stats.general.propertyClasses}')
         tr
           th.text-right Object Classes:
           td.text-right
-            | {{ (results.objectClasses | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.objectClasses>compare_results.objectClasses ? "+": ""}}{{results.objectClasses-compare_results.objectClasses | number}} ({{Math.abs(results.objectClasses-compare_results.objectClasses)*100/compare_results.objectClasses | number:2}}%)', ng-class='{ "text-success" : results.objectClasses>compare_results.objectClasses, "glyphicon-chevron-up": results.objectClasses>compare_results.objectClasses, "text-danger": results.objectClasses<compare_results.objectClasses,"glyphicon-chevron-down":results.objectClasses<compare_results.objectClasses}')
+            | {{ (main.stats.general.objectClasses | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.objectClasses>compare.stats.general.objectClasses ? "+": ""}}{{main.stats.general.objectClasses-compare.stats.general.objectClasses | number}} ({{Math.abs(main.stats.general.objectClasses-compare.stats.general.objectClasses)*100/compare.stats.general.objectClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.objectClasses>compare.stats.general.objectClasses, "glyphicon-chevron-up": main.stats.general.objectClasses>compare.stats.general.objectClasses, "text-danger": main.stats.general.objectClasses<compare.stats.general.objectClasses,"glyphicon-chevron-down":main.stats.general.objectClasses<compare.stats.general.objectClasses}')
         tr
-          th.text-right Combined Classes:
+          th.text-right Total Classes:
           td.text-right
-            | {{ (results.classes | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.classes>compare_results.classes ? "+": ""}}{{results.classes-compare_results.classes | number}} ({{Math.abs(results.classes-compare_results.classes)*100/compare_results.classes | number:2}}%)', ng-class='{ "text-success" : results.classes>compare_results.classes, "glyphicon-chevron-up": results.classes>compare_results.classes, "text-danger": results.classes<compare_results.classes,"glyphicon-chevron-down":results.classes<compare_results.classes}')
-  .clearfix
-  .col-sm-4
-    h4: a#subject-node-types.displaced-anchor Subject RDF Node Types
-    nvd3-pie-chart#subjectRDFNodes(data='subjectRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='true', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='subjectRDFNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
-      svg(style='height:120px')
-  .col-sm-4
-    h4: a#object-node-types.displaced-anchor Object RDF Node Types
-    nvd3-pie-chart#objectRDFNodes(data='objectRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='true', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='objectRDFNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
-      svg(style='height:120px')
-  .col-sm-4
-    h4: a#node-types.displaced-anchor Combined RDF Node Types
-    nvd3-pie-chart#allRDFNodes(data='allRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='true', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='rdfNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
-      svg(style='height:120px')
-  .col-sm-4(ng-show='iriLengthInfos>0')
-    h4: a#iri-lengths.displaced-anchor IRI Lengths
-    div(ng-class='{ "col-sm-4" : iriLengthInfos==3, "col-sm-6" : iriLengthInfos==2, "col-sm-12" : iriLengthInfos==1 }', ng-show='iriLengthInfo1')
-      nvd3-discrete-bar-chart#iriLengthInfo1(data='iriLengthInfo1', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0-9
-    div(ng-class='{ "col-sm-4" : iriLengthInfos==3, "col-sm-6" : iriLengthInfos==2, "col-sm-12" : iriLengthInfos==1 }', ng-show='iriLengthInfo2')
-      nvd3-discrete-bar-chart#iriLengthInfo2(data='iriLengthInfo2', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0-100 by 10
-    div(ng-class='{ "col-sm-4" : iriLengthInfos==3, "col-sm-6" : iriLengthInfos==2, "col-sm-12" : iriLengthInfos==1 }', ng-show='iriLengthInfo3')
-      nvd3-discrete-bar-chart#iriLengthInfo3(data='iriLengthInfo3', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0- by 100
-    .clearfix
-    div Average IRI length: {{(results.averageIRILength | number:3) || "?" }}
-  .col-sm-4(ng-show='literalLengthInfos>0')
-    h4: a#literal-lengths.displaced-anchor Literal Lengths
-    div(ng-class='{ "col-sm-4" : literalLengthInfos==3, "col-sm-6" : literalLengthInfos==2, "col-sm-12" : literalLengthInfos==1 }', ng-show='literalLengthInfo1')
-      nvd3-discrete-bar-chart#literalLengthInfo1(data='literalLengthInfo1', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0-9
-    div(ng-class='{ "col-sm-4" : literalLengthInfos==3, "col-sm-6" : literalLengthInfos==2, "col-sm-12" : literalLengthInfos==1 }', ng-show='literalLengthInfo2')
-      nvd3-discrete-bar-chart#literalLengthInfo2(data='literalLengthInfo2', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0-100 by 10
-    div(ng-class='{ "col-sm-4" : literalLengthInfos==3, "col-sm-6" : literalLengthInfos==2, "col-sm-12" : literalLengthInfos==1 }', ng-show='literalLengthInfo3')
-      nvd3-discrete-bar-chart#literalLengthInfo3(data='literalLengthInfo3', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:110px')
-      .text-center
-        small 0- by 100
-    .clearfix
-    div Average Literal length: {{(results.averageLiteralLength | number:3) || "?" }}
-  .col-sm-4
+            | {{ (main.stats.general.classes | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.classes>compare.stats.general.classes ? "+": ""}}{{main.stats.general.classes-compare.stats.general.classes | number}} ({{Math.abs(main.stats.general.classes-compare.stats.general.classes)*100/compare.stats.general.classes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.classes>compare.stats.general.classes, "glyphicon-chevron-up": main.stats.general.classes>compare.stats.general.classes, "text-danger": main.stats.general.classes<compare.stats.general.classes,"glyphicon-chevron-down":main.stats.general.classes<compare.stats.general.classes}')
+  .col-sm-3.col-lg-3
     a#literal-components.displaced-anchor
     table.table.table-hover.table-condensed
       caption Literal Components
@@ -217,105 +170,195 @@ div
         tr
           th.text-right Datatypes:
           td.text-right
-            | {{ (results.datatypes | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.datatypes>compare_results.datatypes ? "+": ""}}{{results.datatypes-compare_results.datatypes | number}} ({{Math.abs(results.datatypes-compare_results.datatypes)*100/compare_results.datatypes | number:2}}%)', ng-class='{ "text-success" : results.datatypes>compare_results.datatypes, "glyphicon-chevron-up": results.datatypes>compare_results.datatypes, "text-danger": results.datatypes<compare_results.datatypes,"glyphicon-chevron-down":results.datatypes<compare_results.datatypes}')
+            | {{ (main.stats.general.datatypes | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.datatypes>compare.stats.general.datatypes ? "+": ""}}{{main.stats.general.datatypes-compare.stats.general.datatypes | number}} ({{Math.abs(main.stats.general.datatypes-compare.stats.general.datatypes)*100/compare.stats.general.datatypes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.datatypes>compare.stats.general.datatypes, "glyphicon-chevron-up": main.stats.general.datatypes>compare.stats.general.datatypes, "text-danger": main.stats.general.datatypes<compare.stats.general.datatypes,"glyphicon-chevron-down":main.stats.general.datatypes<compare.stats.general.datatypes}')
         tr
           th.text-right Languages:
           td.text-right
-            | {{ (results.languages | number) || "?" }}
-            span.glyphicon(tooltip-placement='right', tooltip='{{results.languages>compare_results.languages ? "+": ""}}{{results.languages-compare_results.languages | number}} ({{Math.abs(results.languages-compare_results.languages)*100/compare_results.languages | number:2}}%)', ng-class='{ "text-success" : results.languages>compare_results.languages, "glyphicon-chevron-up": results.languages>compare_results.languages, "text-danger": results.languages<compare_results.languages,"glyphicon-chevron-down":results.languages<compare_results.languages}')
+            | {{ (main.stats.general.languages | number) || "?" }} 
+            span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.languages>compare.stats.general.languages ? "+": ""}}{{main.stats.general.languages-compare.stats.general.languages | number}} ({{Math.abs(main.stats.general.languages-compare.stats.general.languages)*100/compare.stats.general.languages | number:2}}%)', ng-class='{ "text-success" : main.stats.general.languages>compare.stats.general.languages, "glyphicon-chevron-up": main.stats.general.languages>compare.stats.general.languages, "text-danger": main.stats.general.languages<compare.stats.general.languages,"glyphicon-chevron-down":main.stats.general.languages<compare.stats.general.languages}')
+  .clearfix.visible-lg-block
+  .col-sm-3.col-lg-2
+    h5 
+      a#subject-node-types.displaced-anchor
+      | Subject RDF Node Types
+    nvd3-pie-chart#subjectRDFNodes(data='main.stats.general.subjectRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='false', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='subjectRDFNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
+      svg(style='height:120px')
+  .col-sm-3.col-lg-2
+    h5
+      a#object-node-types.displaced-anchor
+      | Object RDF Node Types
+    nvd3-pie-chart#objectRDFNodes(data='main.stats.general.objectRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='false', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='objectRDFNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
+      svg(style='height:120px')
+  .col-sm-3.col-lg-2
+    h5
+      a#node-types.displaced-anchor
+      | Combined Node Types
+    nvd3-pie-chart#allRDFNodes(data='main.stats.general.allRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='false', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='rdfNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
+      svg(style='height:120px')
+  .col-sm-4.col-lg-3(ng-show='main.stats.general["IRI Length"].count>0')
+    h5
+      a#iri-lengths.displaced-anchor
+      | IRI Lengths
+    div(ng-class='"col-sm-"+(12/main.stats.general["IRI Length"].count)', ng-show='main.stats.general["IRI Length"].single')
+      nvd3-discrete-bar-chart#iriLengthInfo1(data='main.stats.general["IRI Length"].single', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0-9
+    div(ng-class='"col-sm-"+(12/main.stats.general["IRI Length"].count)', ng-show='main.stats.general["IRI Length"].double')
+      nvd3-discrete-bar-chart#iriLengthInfo2(data='main.stats.general["IRI Length"].double', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0-100 by 10
+    div(ng-class='"col-sm-"+(12/main.stats.general["IRI Length"].count)', ng-show='main.stats.general["IRI Length"].triple')
+      nvd3-discrete-bar-chart#iriLengthInfo3(data='main.stats.general["IRI Length"].triple', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0- by 100
+    .clearfix
+    div Average IRI length: {{(main.stats.general.averageIRILength | number:3) || "?" }}
+  .col-sm-4.col-lg-3(ng-show='main.stats.general["Literal Length"].count>0')
+    h5
+      a#literal-lengths.displaced-anchor
+      | Literal Lengths
+    div(ng-class='"col-sm-"+(12/main.stats.general["Literal Length"].count)', ng-show='main.stats.general["Literal Length"].single')
+      nvd3-discrete-bar-chart#literalLengthInfo1(data='main.stats.general["Literal Length"].single', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0-9
+    div(ng-class='"col-sm-"+(12/main.stats.general["Literal Length"].count)', ng-show='main.stats.general["Literal Length"].double')
+      nvd3-discrete-bar-chart#literalLengthInfo2(data='main.stats.general["Literal Length"].double', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0-100 by 10
+    div(ng-class='"col-sm-"+(12/main.stats.general["Literal Length"].count)', ng-show='main.stats.general["Literal Length"].triple')
+      nvd3-discrete-bar-chart#literalLengthInfo3(data='main.stats.general["Literal Length"].triple', showxaxis='false', showyaxis='false', showlegend='false', showcontrols='false', margin='{left:0,top:0,bottom:0,right:0}', clipedge='true', interactive='true', yaxistickformat='yTickFormat', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:110px')
+      .text-center
+        small 0- by 100
+    .clearfix
+    div Average Literal length: {{(main.stats.general.averageLiteralLength | number:3) || "?" }}
   .clearfix
   .page-header
-    h2: a#namespace.displaced-anchor Namespace Information
+    h2
+      a#namespace.displaced-anchor
+      | Namespace Information
   div(ng-repeat='(prefix,ns) in seenNs')
-    .col-sm-4
+    .col-sm-4.col-lg-3
       small
         em {{prefix}}
         | : {{ns}}
   .clearfix
-  .page-header
-    h2: a#property.displaced-anchor Property Information
-  .col-sm-6
-    h4: a#property-classes.displaced-anchor Property Classes
-    nvd3-discrete-bar-chart#propertyTypeInfo(data='propertyTypeInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='false', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-      svg(style='height:220px')
-    div
-      | Items shown account for {{ propertyTypeInfoTotalProperties/results.properties*100 | number:2 }}% of total properties (not taking multiple classes into account)
-  .col-sm-6
-    h4: a#property-namespaces.displaced-anchor Property Namespaces
-    nvd3-discrete-bar-chart#propertyNamespaceInfo(data='propertyNamespaceInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-      svg(style='height:220px')
-    div
-      | Namespaces shown account for {{ propertyNamespaceInfoTotalProperties/results.properties*100 | number:2 }}% of total properties
-  .clearfix
-  h4: a#properties.displaced-anchor Most Used Properties
-  nvd3-multi-bar-chart#propertyInfo(data='propertyInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='true', showcontrols='false', margin='{left:100,top:0,bottom:120,right:0}', stacked='true', yaxistickformat='yTickFormat', interactive='true', tooltips='true', tooltipcontent='propertyTooltipContent')
-    svg(style='height:500px')
-  div
-    | Properties shown account for {{ propertyInfoTotalTriples/results.triples*100 | number:2 }}% of total triples
-  .animate-show(ng-show='resourceObjectInfoTotalTriples>0')
-    .page-header
-      h2: a#resourceObject.displaced-anchor Resource Object Information
-    .col-sm-6
-      h4: a#resource-object-classes.displaced-anchor Object Resource Classes
-      nvd3-discrete-bar-chart#objectTypeInfo(data='objectTypeInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true', ng-show='objectTypeInfo[0].values.length')
-        svg(style='height:220px')
-      div
-        | Items shown account for {{ objectTypeInfoTotalObjects/(results.distinctIRIReferenceObjects+results.distinctBlankNodeObjects)*100 | number:2 }}% of total resource objects (not taking multiple classes into account)
-    .col-sm-6(ng-show='objectNamespaceInfo[0].values.length>0')
-      h4: a#resource-object-namespaces.displaced-anchor Object IRI Reference Namespaces
-      nvd3-discrete-bar-chart#objectNamespaceInfo(data='objectNamespaceInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-        svg(style='height:220px')
-      div
-        | Namespaces shown account for {{ objectNamespaceInfoTotalObjects/results.distinctIRIReferenceObjects*100 | number:2 }}% of total object IRI References
-    .clearfix
-    h4: a#resource-objects.displaced-anchor Most Referenced Resource Objects
-    nvd3-discrete-bar-chart#resourceObjectInfo(data='resourceObjectInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+  h2
+    a#triple.displaced-anchor
+    | Triple Information
+    button.btn.btn-primary(ng-class='fullView ? "active" : ""',ng-click='fullView=true;updateGraphs()') Full
+    button.btn.btn-primary(ng-class='!fullView ? "active" : ""',ng-click='fullView=false;updateGraphs()') Schema
+  .col-sm-12(ng-show="fullView")
+    h4
+      a#subjects.displaced-anchor
+      | Most Referenced Subjects
+    nvd3-discrete-bar-chart#Subject(callback='registerGraph',data='main.stats.triple.Subject.graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
       svg(style='height:250px')
     div
-      | Resources shown account for {{ resourceObjectInfoTotalTriples/results.triples*100 | number:2 }}% of total triples
-  .animate-show(ng-show='literalObjectInfoTotalTriples>0')
-    .page-header
-      h2: a#literalObject.displaced-anchor Literal Object Information
-    .col-sm-6(ng-show='datatypeInfo[0].values.length>0')
-      h4: a#literal-object-datatypes.displaced-anchor Object Literal Datatypes
-      nvd3-discrete-bar-chart#datatypeInfo(data='datatypeInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+      | Subjects shown account for {{ main.stats.triple.Subject.total/main.stats.general.triples*100 | number:2 }}% of total triples
+  div(ng-class='fullView ? "col-sm-6" : "col-sm-12"')
+    h4
+      a#subject-classes.displaced-anchor
+      | Subject Classes
+    nvd3-discrete-bar-chart#Subject_Type(callback='registerGraph',data='main.stats.triple["Subject Type"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+      svg(style='height:220px')
+    div
+      | Items shown account for {{ main.stats.triple["Subject Type"].total/main.stats.general.distinctSubjects*100 | number:2 }}% of subjects (not accounting for multi-instances)
+  .col-sm-6(ng-show="fullView")
+    h4
+      a#subject-namespaces.displaced-anchor
+      | Subject IRI Reference Namespaces
+    nvd3-discrete-bar-chart#Subject_Namespace(callback='registerGraph',data='main.stats.triple["Subject Namespace"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:80,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+      svg(style='height:220px')
+    div
+      | Namespaces shown account for {{ main.stats.triple["Subject Namespace"].total/main.stats.general.distinctIRIReferenceSubjects*100 | number:2 }}% of total subject IRI References
+  .clearfix
+  div(ng-class='fullView ? "col-sm-12 col-lg-4 col-lg-push-8" : "col-sm-12"')
+    .col-sm-6.col-lg-12(ng-show="fullView")
+      h4
+        a#property-classes.displaced-anchor
+        | Property Classes
+      nvd3-discrete-bar-chart#Property_Type(callback='registerGraph',data='main.stats.triple["Property Type"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:50,top:10,bottom:120,right:0}', clipedge='false', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:200px')
+      div
+        | Items shown account for {{ main.stats.triple["Property Type"].total/main.stats.general.properties*100 | number:2 }}% of properties (not accounting for multi-instances)
+    .col-sm-6.col-lg-12(ng-show="fullView")
+      h4
+        a#property-namespaces.displaced-anchor
+        | Property Namespaces
+      nvd3-discrete-bar-chart#Property_Namespace(callback='registerGraph',data='main.stats.triple["Property Namespace"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:50,top:10,bottom:80,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:150px')
+      div
+        | Namespaces shown account for {{ main.stats.triple["Property Namespace"].total/main.stats.general.properties*100 | number:2 }}% of properties
+  .col-sm-12(ng-class='fullView ? "col-lg-8 col-lg-pull-4" : ""')
+    h4
+      a#properties.displaced-anchor
+      | Most Used Properties
+    nvd3-multi-bar-chart#Property(callback='registerGraph',data='main.stats.triple.Property.graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='true', showcontrols='false', margin='{left:100,top:0,bottom:120,right:0}', stacked='true', yaxistickformat='yTickFormat', interactive='true', tooltips='true', tooltipcontent='propertyTooltipContent')
+      svg(style='height:400px')
+    div
+      | Properties shown account for {{ main.stats.triple.Property.total/main.stats.general.triples*100 | number:2 }}% of total triples
+  .clearfix
+  .animate-show(ng-show='main.stats.triple["Object Type"].total>0 || main.stats.triple["Object Namespace"].total>0')
+    div(ng-class='fullView ? "col-sm-6" : "col-sm-12"')
+      h4
+        a#resource-object-classes.displaced-anchor
+        | Object Resource Classes
+      nvd3-discrete-bar-chart#Object_Type(callback='registerGraph',data='main.stats.triple["Object Type"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
         svg(style='height:220px')
       div
-        | Datatypes shown account for {{ datatypeInfoTotalLiterals/results.distinctLiterals*100 | number:2 }}% of total literals
-    .col-sm-6(ng-show='languageInfo[0].values.length>0')
-      h4: a#literal-object-languages.displaced-anchor Object Literal Languages
-      nvd3-discrete-bar-chart#languageInfo(data='languageInfo', showxaxis='true', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:40,right:0}', clipedge='true', yaxistickformat='yTickFormat', xaxisrotatelabels='45', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        | Items shown account for {{ main.stats.triple["Object Type"].total/(main.stats.general.distinctIRIReferenceObjects+main.stats.general.distinctBlankNodeObjects)*100 | number:2 }}% of total resource objects (if no multi-instances)
+    .col-sm-6(ng-show='fullView')
+      h4
+        a#resource-object-namespaces.displaced-anchor
+        | Object IRI Reference Namespaces
+      nvd3-discrete-bar-chart#Object_Namespace(callback='registerGraph',data='main.stats.triple["Object Namespace"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:80,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:220px')
+      div
+        | Namespaces shown account for {{ main.stats.triple["Object Namespace"].total/main.stats.general.distinctIRIReferenceObjects*100 | number:2 }}% of total object IRI References
+    .clearfix
+  .animate-show(ng-show='main.stats.triple["Object Datatype"].total>0 || main.stats.triple["Object Language"].total>0')
+    .animate-show(ng-class='main.stats.triple["Object Language"].total>0 ? "col-sm-6" : "col-sm-12"',ng-show='main.stats.triple["Object Datatype"].total>0')
+      h4
+        a#literal-object-datatypes.displaced-anchor
+        | Object Literal Datatypes
+      nvd3-discrete-bar-chart#Object_Datatype(callback='registerGraph',data='main.stats.triple["Object Datatype"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:220px')
+      div
+        | Datatypes shown account for {{ main.stats.triple["Object Datatype"].total/main.stats.general.distinctLiterals*100 | number:2 }}% of total literals
+    .animate-show(ng-class='main.stats.triple["Object Datatype"].total>0 ? "col-sm-6" : "col-sm-12"',ng-show='main.stats.triple["Object Language"].total>0')
+      h4
+        a#literal-object-languages.displaced-anchor
+        | Object Literal Languages
+      nvd3-discrete-bar-chart#Object_Language(callback='registerGraph',data='main.stats.triple["Object Language"].graphData', showxaxis='true', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:10,bottom:40,right:0}', clipedge='true', yaxistickformat='yTickFormat', xaxisrotatelabels='45', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
         svg(style='height:120px')
       div
-        | Languages shown account for {{ languageInfoTotalLiterals/results.distinctLiterals*100 | number:2 }}% of total literals (also counting non-language literals)
-    .clearfix
-    h4: a#literal-objects.displaced-anchor Most Referenced Literal Objects
-    nvd3-discrete-bar-chart#literalObjectInfo(data='literalObjectInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-      svg(style='height:250px')
-    div
-      | Literals shown account for {{ literalObjectInfoTotalTriples/results.triples*100 | number:2 }}% of total triples
-  .page-header
-    h2: a#subject.displaced-anchor Subject Information
-  .col-sm-6
-    h4: a#subject-classes.displaced-anchor Subject Classes
-    nvd3-discrete-bar-chart#subjectTypeInfo(data='subjectTypeInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true', ng-show='subjectTypeInfo[0].values.length')
-      svg(style='height:220px')
-    div
-      | Items shown account for {{ subjectTypeInfoTotalSubjects/results.distinctSubjects*100 | number:2 }}% of total subjects (not taking multiple classes into account)
-  .col-sm-6
-    h4: a#subject-namespaces.displaced-anchor Subject IRI Reference Namespaces
-    nvd3-discrete-bar-chart#subjectNamespaceInfo(data='subjectNamespaceInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:80,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-      svg(style='height:220px')
-    div
-      | Namespaces shown account for {{ subjectNamespaceInfoTotalSubjects/results.distinctIRIReferenceSubjects*100 | number:2 }}% of total subject IRI References
+        | Languages shown account for {{ main.stats.triple["Object Language"].total/main.stats.general.distinctLiterals*100 | number:2 }}% of total literals (also counting non-language literals)
   .clearfix
-  h4: a#subjects.displaced-anchor Most Referenced Subjects
-  nvd3-discrete-bar-chart#subjectInfo(data='subjectInfo', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:20,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
-    svg(style='height:250px')
-  div
-    | Subjects shown account for {{ subjectInfoTotalTriples/results.triples*100 | number:2 }}% of total triples
-  .help-block(style='margin-top:20px')
+  .col-sm-12.animate-show(ng-show='fullView && main.stats.triple["Object Resource"].total>0',ng-class='main.stats.triple["Object Literal"]>0 ? "col-lg-6" : ""')
+      h4
+        a#resource-objects.displaced-anchor
+        | Most Referenced Resource Objects
+      nvd3-discrete-bar-chart#Object_Resource(callback='registerGraph',data='main.stats.triple["Object Resource"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:250px')
+      div
+        | Resources shown account for {{ main.stats.triple["Object Resource"].total/main.stats.general.triples*100 | number:2 }}% of total triples
+  .col-sm-12.animate-show(ng-show='fullView && main.stats.triple["Object Literal"].total>0',ng-class='main.stats.triple["Object Resource"]>0 ? "col-lg-6" : ""')
+      h4 
+        a#literal-objects.displaced-anchor
+        | Most Referenced Literal Objects
+      nvd3-discrete-bar-chart#Object_Literal(callback='registerGraph',data='main.stats.triple["Object Literal"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')
+        svg(style='height:250px')
+      div
+        | Literals shown account for {{ main.stats.triple["Object Literal"].total/main.stats.general.triples*100 | number:2 }}% of total triples
+  .clearfix
+  .help-block(style='margin-top:10px')
     span(style='margin-left:10px') Help
     ul
       li Clicking on an item in the graphs above limits data to match that restriction.

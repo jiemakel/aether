@@ -4,16 +4,16 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
   prefixes = '''
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX  owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
-    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
     PREFIX void: <http://rdfs.org/ns/void#>
     PREFIX sd: <http://www.w3.org/ns/sparql-service-description#>
     PREFIX void-ext: <http://ldf.fi/void-ext#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
     PREFIX sioc: <http://rdfs.org/sioc/ns#>
     PREFIX prov: <http://www.w3.org/ns/prov#>
-
+    
     '''
   queries = {
     'General' : prefixes + '''
@@ -172,7 +172,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     LIMIT 25
     '''
     'Subject Type' : prefixes + '''
-    SELECT ?class ?entities {
+    SELECT DISTINCT ?class ?entities {
       |BEGINGRAPH|
       |DATASET| void:classPartition ?partition .
       ?partition void:class ?class .
@@ -194,7 +194,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     LIMIT 25
     '''
     'Object Type' : prefixes + '''
-    SELECT ?objectClass ?entities {
+    SELECT DISTINCT ?objectClass ?entities {
       |BEGINGRAPH|
       |DATASET| void-ext:objectClassPartition ?partition .
       ?partition void:class ?objectClass .
@@ -205,7 +205,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     LIMIT 25
     '''
     'Property Namespace' : prefixes + '''
-    SELECT ?propertyNamespace ?entities {
+    SELECT DISTINCT ?propertyNamespace ?entities {
       |BEGINGRAPH|
       |DATASET| void-ext:propertyNamespacePartition ?partition .
       ?partition void-ext:namespace ?propertyNamespace .
@@ -216,7 +216,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     LIMIT 25
     '''
     'Property Type' : prefixes + '''
-    SELECT ?propertyClass ?entities {
+    SELECT DISTINCT ?propertyClass ?entities {
       |BEGINGRAPH|
       |DATASET| void-ext:propertyClassPartition ?partition .
       ?partition void:class ?propertyClass .
@@ -231,23 +231,25 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     'Class Count' : '''
         SELECT (COUNT(DISTINCT ?type) AS ?classes) {
           |BEGINGRAPH|
-          {
-            |BEFORECONSTRAINT|
-            ?s ?p ?o .
-            |AFTERCONSTRAINT|
-            BIND (?s AS ?n)
-          } UNION {
-            |BEFORECONSTRAINT|
-            ?s ?p ?o .
-            |AFTERCONSTRAINT|
-            BIND (?p AS ?n)
-          } UNION {
-            |BEFORECONSTRAINT|
-            ?s ?p ?o .
-            |AFTERCONSTRAINT|
-            BIND (?o AS ?n)
-          }          
           ?n a ?type .
+          FILTER EXISTS {
+            {
+              BIND (?n AS ?s)
+              |BEFORECONSTRAINT|
+              ?s ?p ?o .
+              |AFTERCONSTRAINT|
+            } UNION {
+              BIND (?n AS ?p)
+              |BEFORECONSTRAINT|
+              ?s ?p ?o .
+              |AFTERCONSTRAINT|
+            } UNION {
+              BIND (?n AS ?o)
+              |BEFORECONSTRAINT|
+              ?s ?p ?o .
+              |AFTERCONSTRAINT|
+            }
+          }
           |ENDGRAPH|
         }
     '''
@@ -838,6 +840,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         GROUP BY ?p
       }
     }
+    ORDER BY DESC(?triples)
     '''
     'Subject Type' : '''
     SELECT ?class ?entities {
@@ -1008,163 +1011,145 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
     'Class Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void:classes ?classes .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Subject Class Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:subjectClasses ?subjectClasses .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Property Class Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:propertyClasses ?propertyClasses .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Class Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:objectClasses ?objectClasses .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Triple Part Counts' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void:distinctSubjects ?distinctSubjects .
         |PARTITIONIRI| void:distinctObjects ?distinctObjects .
         |PARTITIONIRI| void:properties ?properties .
         |PARTITIONIRI| void:triples ?triples .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'RDF Node Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctRDFNodes ?distinctRDFNodes .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'IRI Reference Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctIRIReferences ?distinctIRIReferences .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Blank Node Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctBlankNodes ?distinctBlankNodes .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Literal Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctLiterals ?distinctLiterals .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Datatype Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:datatypes ?datatypes .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Language Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:languages ?languages .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'IRI Reference Subject Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctIRIReferenceSubjects ?distinctIRIReferenceSubjects .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Blank Node Subject Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctBlankNodeSubjects ?distinctBlankNodeSubjects .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'IRI Reference Object Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctIRIReferenceObjects ?distinctIRIReferenceObjects .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Blank Node Object Count' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:distinctBlankNodeObjects ?distinctBlankNodeObjects .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Average IRI Length' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:averageIRILength ?averageIRILength .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Average Literal Length' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:averageLiteralLength ?averageLiteralLength .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'IRI Length' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:iriLengthPartition _:b .
         _:b void-ext:length ?length .
         _:b void-ext:minLength ?minLength .
@@ -1172,12 +1157,11 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Literal Length' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:literalLengthPartition _:b .
         _:b void-ext:length ?length .
         _:b void-ext:minLength ?minLength .
@@ -1185,67 +1169,61 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Subject Type' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void:classPartition _:b .
         _:b void:class ?class .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Subject Namespace' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:subjectNamespacePartition _:b .
         _:b void-ext:namespace ?subjectNamespace .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Subject' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:subjectPartition _:b .
         _:b void-ext:subject ?s .
         _:b void:triples ?triples .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Property Type' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:propertyClassPartition _:b .
         _:b void:class ?propertyClass .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Property Namespace' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:propertyNamespacePartition _:b .
         _:b void-ext:namespace ?propertyNamespace .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Property' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void:propertyPartition _:b .
         _:b void:property ?p .
         _:b void:triples ?triples .
@@ -1258,73 +1236,67 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         _:b void:distinctObjects ?distinctObjects .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Type' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:objectClassPartition _:b .
         _:b void:class ?objectClass .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Namespace' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:objectNamespacePartition _:b .
         _:b void-ext:namespace ?objectNamespace .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Resource' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:objectPartition _:b .
         _:b void-ext:object ?o .
         _:b void:triples ?triples .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Datatype' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:datatypePartition _:b .
         _:b void-ext:datatype ?datatype .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Language' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:languagePartition _:b .
         _:b void-ext:language ?language .
         _:b void:entities ?entities .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
     '''
     'Object Literal' : prefixes + '''
       INSERT {
         |BEGINUPDATEGRAPH|
-        |DATASETTOPARTITION1|
         |PARTITIONIRI| void-ext:objectPartition _:b .
         _:b void-ext:object ?o .
         _:b void:triples ?triples .
         |ENDUPDATEGRAPH|
       } WHERE {
-        { |DATASETTOPARTITION2| }
+        { |BEGINUPDATEGRAPH||DATASETTOPARTITION||ENDUPDATEGRAPH| }
       '''
   }
   insertMetadataQuery =  prefixes + '''
@@ -1332,6 +1304,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |BEGINUPDATEGRAPH|
       |DATASETIRI| a void:Dataset .
       |DATASETIRI| void:sparqlEndpoint |SPARQLENDPOINT| .
+      |DATASETIRI| dcterms:created "|STARTTIME|"^^xsd:dateTime .      
       |GRAPHIRIINFO|
       |DATASETIRI| prov:generatedBy _:a .
       _:a a prov:Activity .
@@ -1345,6 +1318,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
   insertEndTimeQuery =  prefixes + '''
     INSERT {
       |BEGINUPDATEGRAPH|
+      |DATASETIRI| dcterms:modified "|ENDTIME|"^^xsd:dateTime .
       ?a prov:endedAtTime "|ENDTIME|"^^xsd:dateTime .
       |ENDUPDATEGRAPH|
     } WHERE {
@@ -1353,42 +1327,43 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |ENDUPDATEGRAPH|
     }
   '''
-  getConstraints = (stat, value) ->
+  function getConstraints(limits)
     beforeConstraint = ''
     afterConstraint = ''
-    switch stat
-      when "Subject"
-        beforeConstraint = "BIND(#{value} AS ?s)"
-      when "Subject Type"
-        afterConstraint = "?s a #{value} ."
-      when "Subject Namespace"
-        afterConstraint = "FILTER (STRSTARTS(STR(?s),STR(#{value})))"
-      when "Property"
-        beforeConstraint = "BIND(#{value} AS ?p)"
-      when "Property Type"
-        afterConstraint = "?p a #{value} ."
-      when "Property Namespace"
-        afterConstraint = "FILTER (STRSTARTS(STR(?p),STR(#{value})))"
-      when "Object Resource", "Object Literal"
-        beforeConstraint = "BIND(#{value} AS ?o)"
-      when "Object Type"
-        afterConstraint = "?o a #{value} ."
-      when "Object Namespace"
-        afterConstraint = "FILTER (STRSTARTS(STR(?o),STR(#{value})))"
-      when "Object Datatype"
-        afterConstraint = "FILTER(isLiteral(?o) && datatype(?o)=#{value})"
-      when "Object Language"
-        afterConstraint = "FILTER(isLiteral(?o) && lang(?o)=#{value})"
-    { beforeConstraint : beforeConstraint, afterConstraint : afterConstraint }
+    if limits? then for limit in limits
+      switch limit.stat
+        when "Subject"
+          beforeConstraint += "BIND(#{limit.value} AS ?s)"
+        when "Subject Type"
+          afterConstraint += "?s a #{limit.value} ."
+        when "Subject Namespace"
+          afterConstraint += "FILTER (STRSTARTS(STR(?s),STR(#{limit.value})))"
+        when "Property"
+          beforeConstraint += "BIND(#{limit.value} AS ?p)"
+        when "Property Type"
+          afterConstraint += "?p a #{limit.value} ."
+        when "Property Namespace"
+          afterConstraint += "FILTER (STRSTARTS(STR(?p),STR(#{limit.value})))"
+        when "Object Resource", "Object Literal"
+          beforeConstraint += "BIND(#{limit.value} AS ?o)"
+        when "Object Type"
+          afterConstraint += "?o a #{limit.value} ."
+        when "Object Namespace"
+          afterConstraint += "FILTER (STRSTARTS(STR(?o),STR(#{limit.value})))"
+        when "Object Datatype"
+          afterConstraint += "FILTER(isLiteral(?o) && datatype(?o)=#{limit.value})"
+        when "Object Language"
+          afterConstraint += "FILTER(isLiteral(?o) && lang(?o)=#{limit.value})"
+    { beforeConstraint, afterConstraint }
   getPossibleLimitsQuery = prefixes + '''
-    SELECT ?limitStat ?limitObject {
+    SELECT ?stat ?value {
       |BEGINGRAPH|
       |DATASETIRI| ?limitProperty ?partition .
-      ?partition ?limitProperty2 ?limitObject .
-      FILTER(?limitObject!=rdfs:Resource)
-      FILTER(?limitStat!='Object Resource' || isIRI(?limitObject))
-      FILTER(?limitStat!='Object Literal' || isLiteral(?limitObject))
-      VALUES (?limitStat ?limitProperty ?limitProperty2) {
+      ?partition ?limitProperty2 ?value .
+      FILTER(?value!=rdfs:Resource)
+      FILTER(?stat!='Object Resource' || isIRI(?value))
+      FILTER(?stat!='Object Literal' || isLiteral(?value))
+      VALUES (?stat ?limitProperty ?limitProperty2) {
         ('Property' void:propertyPartition void:property)
         ('Subject Type' void:classPartition void:class)
         ('Subject' void-ext:subjectPartition void-ext:subject)
@@ -1405,59 +1380,53 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |ENDGRAPH|
     }
   '''
-  {
-    generalStatQueries : [
-      'Class Count'
-      'Subject Class Count'
-      'Property Class Count'
-      'Object Class Count'
-      'Triple Part Counts'
-      'RDF Node Count'
-      'Literal Count'
-      'Datatype Count'
-      'Language Count'
-      'IRI Reference Count'
-      'Blank Node Count'
-      'IRI Reference Subject Count'
-      'Blank Node Subject Count'
-      'IRI Reference Object Count'
-      'Blank Node Object Count'
-      'Average IRI Length'
-      'Average Literal Length'
-    ]
-    generateStats : [
-      'Class Count'
-      'Subject Class Count'
-      'Property Class Count'
-      'Object Class Count'
-      'Triple Part Counts'
-      'RDF Node Count'
-      'Literal Count'
-      'Datatype Count'
-      'Language Count'
-      'IRI Reference Count'
-      'Blank Node Count'
-      'IRI Reference Subject Count'
-      'Blank Node Subject Count'
-      'IRI Reference Object Count'
-      'Blank Node Object Count'
-      'Average IRI Length'
-      'Average Literal Length'
-      'IRI Length'
-      'Literal Length'
-      'Subject Type'
-      'Subject Namespace'
-      'Subject'
-      'Property Type'
-      'Property Namespace'
-      'Property'
-      'Object Type'
-      'Object Namespace'
-      'Object Resource'
-      'Object Datatype'
-      'Object Language'
-      'Object Literal'
-    ]
+  subjectStats = [
+    'Subject Type'
+    'Subject Namespace'
+    'Subject'
+  ]
+  propertyStats = [
+    'Property Type'
+    'Property Namespace'
+    'Property'
+  ]
+  objectStats = [
+    'Object Type'
+    'Object Namespace'
+    'Object Resource'
+    'Object Datatype'
+    'Object Language'
+    'Object Literal'
+  ]
+  generalStats = [
+    'Class Count'
+    'Subject Class Count'
+    'Property Class Count'
+    'Object Class Count'
+    'Triple Part Counts'
+    'RDF Node Count'
+    'Literal Count'
+    'Datatype Count'
+    'Language Count'
+    'IRI Reference Count'
+    'Blank Node Count'
+    'IRI Reference Subject Count'
+    'Blank Node Subject Count'
+    'IRI Reference Object Count'
+    'Blank Node Object Count'
+    'Average IRI Length'
+    'Average Literal Length'
+    'IRI Length'
+    'Literal Length'
+  ]
+  tripleStats = subjectStats ++ propertyStats ++ objectStats
+  { 
+    generalStats
+    subjectStats
+    propertyStats
+    objectStats
+    tripleStats
+    allStats : generalStats ++ tripleStats
     partitionStatInfo : {
       'Subject Type' : { partitionProperty1: 'void:classPartition', partitionProperty2 : 'void:class', binding: 'class' }
       'Subject Namespace' : { partitionProperty1: 'void-ext:subjectNamespacePartition', partitionProperty2 : 'void-ext:namespace', binding : 'subjectNamespace' }
@@ -1471,6 +1440,12 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       'Object Datatype' : { partitionProperty1: 'void-ext:datatypePartition', partitionProperty2 : 'void-ext:datatype' , binding: 'datatype' }
       'Object Language' : { partitionProperty1: 'void-ext:languagePartition', partitionProperty2 : 'void-ext:language', binding: 'language' }
       'Object Literal' : { partitionProperty1: 'void-ext:objectPartition', partitionProperty2 : 'void-ext:object', binding: 'o' }
+    }
+    banList : {
+      'Object Type': ['Object Datatype','Object Language','Object Literal','Literal Length','Average Literal Length','Datatype Count','Language Count']
+      'Object Namespace': ['Object Datatype','Object Language','Object Literal','Literal Length','Average Literal Length','Datatype Count','Language Count']
+      'Object Datatype': ['Object Language','Object Type','Object Namespace','IRI Reference Object Count','Blank Node Object Count','Object Class Count']
+      'Object Language': ['Object Datatype','Object Type','Object Namespace','IRI Reference Object Count','Blank Node Object Count','Object Class Count']
     }
     getPossibleLimits : (endpoint,graphIRI,datasetIRI) ->
       sparql.query(endpoint,getPossibleLimitsQuery
@@ -1496,35 +1471,32 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
           .replace(/\|ENDUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " } " else "")
           .replace(/\|ENDTIME\|/g,endTime)
       )
-    getStatistic : (endpoint,graphIRI,datasetIRI,stat,limitStat,limitTarget,options) ->
-      if (limitTarget?)
-        dataset="<#{datasetIRI}> #{this.partitionStatInfo[limitStat].partitionProperty1} ?cpartition . ?cpartition #{this.partitionStatInfo[limitStat].partitionProperty2} #{limitTarget} . ?cpartition"
-      else
-        dataset="<#{datasetIRI}>"
+    getStatistic : (endpoint,graphIRI,datasetIRI,stat,limits,options) ->
+      dataset="<#{datasetIRI}>"
+      if (limits?)
+        for limit,index in limits
+          dataset+=" #{this.partitionStatInfo[limit.stat].partitionProperty1} ?cpartition#{index} . ?cpartition#{index} #{this.partitionStatInfo[limit.stat].partitionProperty2} #{limit.value} . ?cpartition#{index}"
       sparql.query(endpoint,queries[stat]
         .replace(/\|BEGINGRAPH\|/g,if graphIRI? && graphIRI!='' then " GRAPH <#{graphIRI}> {" else "")
         .replace(/\|ENDGRAPH\|/g,if graphIRI? && graphIRI!='' then " } " else "")
         .replace(/\|DATASET\|/g,dataset),options)
-    calculateStatistic : (endpoint,graphIRI,stat,limitStat,limitTarget,options) ->
-      constraints = getConstraints(limitStat,limitTarget)
+    calculateStatistic : (endpoint,graphIRI,stat,limits,options) ->
+      constraints = getConstraints(limits)
       sparql.query(endpoint,calculationQueries[stat]
         .replace(/\|BEFORECONSTRAINT\|/g,constraints.beforeConstraint)
         .replace(/\|AFTERCONSTRAINT\|/g,constraints.afterConstraint)
         .replace(/\|BEGINGRAPH\|/g,if graphIRI? && graphIRI!='' then " GRAPH <#{graphIRI}> {" else "")
         .replace(/\|ENDGRAPH\|/g,if graphIRI? && graphIRI!='' then " } " else ""),options)
-    calculateAndInsertStatistic : (updateEndpoint,updateGraphIRI,stat,datasetIRI,queryEndpoint,graphIRI,limitStat,limitTarget) ->
-      if (limitTarget?)
-        constraints = getConstraints(limitStat,limitTarget)
-        partitionProperty1 = this.partitionStatInfo[limitStat].partitionProperty1
-        partitionProperty2 = this.partitionStatInfo[limitStat].partitionProperty2
-        partitionIRI = "?apartition"
-        datasetToPartition1 = ''
-        datasetToPartition2 = "<#{datasetIRI}> #{partitionProperty1} #{partitionIRI} . #{partitionIRI} #{partitionProperty2} #{limitTarget} ."
+    calculateAndInsertStatistic : (updateEndpoint,updateGraphIRI,stat,datasetIRI,queryEndpoint,graphIRI,limits) ->
+      partitionIRI = "<#{datasetIRI}>"
+      datasetToPartition = ''
+      if (limits?)
+        constraints = getConstraints(limits)
+        for limit,index in limits
+          datasetToPartition += "#{partitionIRI} #{this.partitionStatInfo[limit.stat].partitionProperty1} ?apartition#{index} . ?apartition#{index} #{this.partitionStatInfo[limit.stat].partitionProperty2} #{limit.value} ."
+          partitionIRI = "?apartition#{index}"
       else
         constraints = { beforeConstraint : '', afterConstraint : '' }
-        partitionIRI = "<#{datasetIRI}>"
-        datasetToPartition1 = ''
-        datasetToPartition2 = ''
       query = insertQueries[stat]+'''
       {
       SERVICE <|QUERYENDPOINT|> {
@@ -1534,21 +1506,18 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
         .replace(/\|ENDUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " } " else "")
         .replace(/\|BEGINGRAPH\|/g,if graphIRI? && graphIRI!='' then " GRAPH <#{graphIRI}> {" else "")
         .replace(/\|ENDGRAPH\|/g,if graphIRI? && graphIRI!='' then " } " else "")
-        .replace(/\|QUERYENDPOINT\|/g,queryEndpoint).replace(/\|DATASETTOPARTITION1\|/g,datasetToPartition1)
-        .replace(/\|DATASETTOPARTITION2\|/g,datasetToPartition2).replace(/\|PARTITIONIRI\|/g,partitionIRI)
+        .replace(/\|QUERYENDPOINT\|/g,queryEndpoint)
+        .replace(/\|DATASETTOPARTITION\|/g,datasetToPartition).replace(/\|PARTITIONIRI\|/g,partitionIRI)
         .replace(/\|BEFORECONSTRAINT\|/g,constraints.beforeConstraint)
         .replace(/\|AFTERCONSTRAINT\|/g,constraints.afterConstraint))
-    insertReadyStatistic : (updateEndpoint,updateGraphIRI,datasetIRI,stat,limitStat,limitTarget,data) ->
-      if (limitTarget?)
-        partitionProperty1 = this.partitionStatInfo[limitStat].partitionProperty1
-        partitionProperty2 = this.partitionStatInfo[limitStat].partitionProperty2
-        partitionIRI = "?apartition"
-        datasetToPartition1 = ''
-        datasetToPartition2 = "<#{datasetIRI}> #{partitionProperty1} #{partitionIRI} . #{partitionIRI} #{partitionProperty2} #{limitTarget} ."
+    insertReadyStatistic : (updateEndpoint,updateGraphIRI,datasetIRI,stat,limits,data) ->
+      partitionIRI = "<#{datasetIRI}>"
+      datasetToPartition = ''
+      if (limits?)
+        for limit,index in limits
+          datasetToPartition += "#{partitionIRI} #{this.partitionStatInfo[limit.stat].partitionProperty1} ?apartition#{index} . ?apartition#{index} #{this.partitionStatInfo[limit.stat].partitionProperty2} #{limit.value} ."
+          partitionIRI = "?apartition#{index}"
       else
-        partitionIRI = '<' + datasetIRI + '>'
-        datasetToPartition1 = ''
-        datasetToPartition2 = ''
       values = "VALUES ( "
       for svar in data.head.vars
         values = values + "?" + svar + " "
@@ -1559,13 +1528,12 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
           values = values + sparql.bindingToString(binding[svar]) + ' '
         values = values + ') '
       values = values + "}"
-      datasetToPartition2 = datasetToPartition2 + values
+      datasetToPartition = datasetToPartition + values
       query = insertQueries[stat] + '}'
       sparql.update(updateEndpoint,query
         .replace(/\|BEGINUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " GRAPH <#{updateGraphIRI}> {" else "")
         .replace(/\|ENDUPDATEGRAPH\|/g,if updateGraphIRI? && updateGraphIRI!='' then " } " else "")
-        .replace(/\|DATASETTOPARTITION1\|/g,datasetToPartition1)
-        .replace(/\|DATASETTOPARTITION2\|/g,datasetToPartition2)
+        .replace(/\|DATASETTOPARTITION\|/g,datasetToPartition)
         .replace(/\|PARTITIONIRI\|/g,partitionIRI))
   }
 )

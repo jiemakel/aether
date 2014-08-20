@@ -4,6 +4,7 @@ div
   h4.page-header Generate statistics for
   .form-group(ng-class='{ "has-error": !sparqlEndpointInputValid && sparqlEndpointInputHasFocus, "has-success": sparqlEndpointInputValid && sparqlEndpointInputHasFocus }')
     label.control-label SPARQL Endpoint:
+    i.glyphicon.glyphicon-info-sign.pull-right(tooltip-placement="left",tooltip="If your endpoint isn't working, it may not be setting appropriate CORS headers. If so, you can try it with 'http://ldf.fi/corsproxy/'' prepended (e.g. http://ldf.fi/corsproxy/dbpedia.org/sparql)")
     input.form-control(type='text', ng-model='sparqlEndpointInput', ng-blur='sparqlEndpoint = sparqlEndpointInputValid ? sparqlEndpointInput : sparqlEndpoint ; sparqlEndpointInputHasFocus = !sparqlEndpointInputValid', ng-focus='sparqlEndpointInputHasFocus = true')
   .form-group
     label.control-label Graph:
@@ -23,10 +24,14 @@ div
     input.form-control(type='text', ng-model='datasetIRI')
   .checkbox
     label.control-label
-      input(ng-model='doSelections', type='checkbox')
-      | Calculate statistics for all partitions (allows viewing graphs for each partition but takes much longer)
+      input(ng-model='doAllSingleSelections', type='checkbox')
+      | Calculate statistics for all partitions (allows selecting in graphs but takes much longer)
+  .checkbox
+    label.control-label
+      input(ng-model='doSchemaSelections', type='checkbox')
+      | Calculate statistics for schema partitions (allows schema-relevant selections in graphs but takes much longer)
   .form-group
-    button.btn.btn-default(ng-disabled='datasetIRI==null || sparulEndpoint == null || sparqlEndpoint == null', type='submit', ui-sref='generate({doSelections:doSelections,sparqlEndpoint:sparqlEndpoint,sparulEndpoint:sparulEndpoint,datasetIRI:datasetIRI,graphIRI:graphIRI,updateGraphIRI:updateGraphIRI})') Generate
+    button.btn.btn-default(ng-disabled='datasetIRI==null || sparulEndpoint == null || sparqlEndpoint == null', type='submit', ui-sref='generate({doAllSingleSelections:doAllSingleSelections,doSchemaSelections:doSchemaSelections,sparqlEndpoint:sparqlEndpoint,sparulEndpoint:sparulEndpoint,datasetIRI:datasetIRI,graphIRI:graphIRI,updateGraphIRI:updateGraphIRI})') Generate
   .row
     .alert.alert-block.alert-danger(ng-repeat='error in errors')
       | {{error.errorSource}} returned error {{error.errorStatus}}:
