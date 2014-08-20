@@ -1,3 +1,3 @@
 # Aether VoID statistics tool
 
-see http://demo.seco.tkk.fi/aether/
+see http://jiemakel.github.io/aether/
