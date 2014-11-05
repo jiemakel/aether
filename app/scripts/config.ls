@@ -33,7 +33,7 @@ angular.module('fi.seco.aether', [ 'http-auth-interceptor', 'ngAnimate', 'ui.rou
       )
     ])
     $stateProvider.state('view', {
-      url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&subjectLimitStat&subjectLimitValue&propertyLimitStat&propertyLimitValue&objectLimitStat&objectLimitValue'
+      url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&subjectLimitStat&subjectLimitValue&propertyLimitStat&propertyLimitValue&objectLimitStat&objectLimitValue&fullView'
       templateUrl: 'partials/view.html'
       controller:'ViewCtrl'
       reloadOnSearch: false

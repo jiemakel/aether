@@ -74,7 +74,7 @@ angular.module('fi.seco.aether')
     $scope.registerGraph = (graph) ->
       graphs.push(graph)
     $scope.updateGraphs = ->
-      $timeout(!-> 
+      $timeout(!->
         for graph in graphs then graph.update!
         if (highlightTimeout) then $timeout.cancel(highlightTimeout)
         highlightTimeout := $timeout(updateHighlights,200)
@@ -179,7 +179,7 @@ angular.module('fi.seco.aether')
           if ($scope.dataset_graphIRI)
             GB = "GRAPH <#{$scope.dataset_graphIRI}> {"
             GE = "}"
-          else 
+          else
             GB = ""
             GE = ""
           switch event.targetScope.id
@@ -199,11 +199,11 @@ angular.module('fi.seco.aether')
         clickTimeout := $timeout(->
           stat = event.targetScope.id.replace(/_/g," ")
           if (stat in voidService.subjectStats)
-            if $scope.limits.subject.value==value && $scope.limits.subject.stat==stat then $scope.limits.subject = void else $scope.limits.subject = { value, stat }
+            if $scope.limits.subject?.value==value && $scope.limits.subject.stat==stat then $scope.limits.subject = void else $scope.limits.subject = { value, stat }
           else if (stat in voidService.propertyStats)
-            if $scope.limits.property.value==value && $scope.limits.property.stat==stat then $scope.limits.property = void else $scope.limits.property = { value, stat }
+            if $scope.limits.property?.value==value && $scope.limits.property.stat==stat then $scope.limits.property = void else $scope.limits.property = { value, stat }
           else if (stat in voidService.objectStats)
-            if $scope.limits.object.value==value && $scope.limits.object.stat==stat then $scope.limits.object = void else $scope.limits.object = { value, stat }
+            if $scope.limits.object?.value==value && $scope.limits.object.stat==stat then $scope.limits.object = void else $scope.limits.object = { value, stat }
           else return
           $scope.$apply!
         ,500)
@@ -363,10 +363,10 @@ angular.module('fi.seco.aether')
         for binding in data.results.bindings
           los = sparql.bindingToString(binding.value)
           lo = {name: shortForm(los), stat : binding.stat.value, value : los }
-          if (lo.stat in voidService.subjectStats) 
+          if (lo.stat in voidService.subjectStats)
             $scope.availableLimits.subject.push(lo)
             if ($stateParams['subjectLimitStat']==lo.stat && $stateParams['subjectLimitValue']==los) then $scope.limits.subject=lo
-          else if (lo.stat in voidService.propertyStats) 
+          else if (lo.stat in voidService.propertyStats)
             $scope.availableLimits.property.push(lo)
             if ($stateParams['propertyLimitStat']==lo.stat && $stateParams['propertyLimitValue']==los) then $scope.limits.property=lo
           else if (lo.stat in voidService.objectStats)
@@ -453,7 +453,7 @@ angular.module('fi.seco.aether')
             key = '▲' + key
         if (binding.length?)
           v1 = v2 = 0
-        else 
+        else
           v1 = parseInt(binding.minLength.value)
           v2 = if (binding.maxLength?) then parseInt(binding.maxLength.value) else 2000
         if (v2 - v1 < 9) then entities1.push([key, count])
@@ -464,17 +464,17 @@ angular.module('fi.seco.aether')
       if (entities1.length!=0)
         infos++
         $scope.main.stats.general[stat].single = [ { "key" : valueType2 , values : entities1 } ]
-      else 
+      else
         delete $scope.main.stats.general[stat].single
       if (entities2.length!=0)
         infos++
         $scope.main.stats.general[stat].double = [ { "key" : valueType2 , values : entities2 } ]
-      else 
+      else
         delete $scope.main.stats.general[stat].double
       if (entities3.length!=0)
         infos++
         $scope.main.stats.general[stat].triple = [ { "key" : valueType2 , values : entities3 } ]
-      else 
+      else
         delete $scope.main.stats.general[stat].triple
       $scope.main.stats.general[stat].count = infos
     !function handle(stat,keyType,valueType1, valueType2)
@@ -604,7 +604,7 @@ angular.module('fi.seco.aether')
             'Blank Nodes':$scope.compare.stats.general.distinctBlankNodeObjects
             'Literals':$scope.compare.stats.general.distinctLiterals
           }
-      else 
+      else
         if ($scope.main.stats.general.distinctIRIReferences? && $scope.main.stats.general.distinctBlankNodes? && $scope.main.stats.general.distinctLiterals?)
           $scope.main.stats.general.allRDFNodes = [['IRI References',$scope.main.stats.general.distinctIRIReferences],['Blank Nodes',$scope.main.stats.general.distinctBlankNodes],['Literals',$scope.main.stats.general.distinctLiterals]]
         if ($scope.main.stats.general.distinctIRIReferenceSubjects? && $scope.main.stats.general.distinctBlankNodeSubjects?)
@@ -632,7 +632,7 @@ angular.module('fi.seco.aether')
         $scope.dataset_sparqlEndpoint = null
         $scope.dataset_graphIRI = null
         for binding in $scope.main.datasets
-          if $scope.main.datasetIRI==binding.datasetIRI.value 
+          if $scope.main.datasetIRI==binding.datasetIRI.value
             $scope.dataset_sparqlEndpoint=binding.sparqlEndpoint?.value
             $scope.dataset_graphIRI=binding.graphIRI?.value
       if (fetchGeneralStatistics)
@@ -652,9 +652,9 @@ angular.module('fi.seco.aether')
           ).error(handleError)
         else calculateGeneralStatistics(section,$scope[section].sparqlEndpoint,$scope[section].graphIRI)
       if !$scope[section].stats.triple? then $scope[section].stats.triple = {}
-      for stat of updateData when fetchGeneralStatistics || (stat!='IRI Length' && stat!='Literal Length') 
+      for stat of updateData when fetchGeneralStatistics || (stat!='IRI Length' && stat!='Literal Length')
         if cancelers[section][stat]? then cancelers[section][stat].resolve!
-        stattype = 
+        stattype =
           if voidService.subjectStats[stat] then \subject
           else if voidService.propertyStats[stat] then \property
           else \object
@@ -723,7 +723,7 @@ angular.module('fi.seco.aether')
     $scope.compare = {
       sparqlEndpoint : $stateParams.compare_sparqlEndpoint
       datasetIRI : $stateParams.compare_datasetIRI
-      graphIRI : $stateParams.compare_graphIRI      
+      graphIRI : $stateParams.compare_graphIRI
       stats: { general: {}, triple: {}}
     }
     $scope.limits = {
@@ -731,14 +731,15 @@ angular.module('fi.seco.aether')
       property : if $stateParams.propertyLimitStat? and $stateParams.propertyLimitValue? then {stat:$stateParams.propertyLimitStat,value:$stateParams.propertyLimitValue} else void
       object : if $stateParams.objectLimitStat? and $stateParams.objectLimitValue? then {stat:$stateParams.objectLimitStat,value:$stateParams.objectLimitValue} else void
     }
-    $scope.fullView = true
+    $scope.fullView = if ($stateParams.fullView?) then $stateParams.fullView!="false" else true
+    $scope.$watch 'fullView', (val) !-> $location.search("fullView",val)
     if (!$scope.compare.graphIRI) then $scope.compare.graphIRI = $scope.main.graphIRI
     if (!$scope.compare.datasetIRI) then $scope.compare.datasetIRI = $scope.main.datasetIRI
     if ($scope.main.sparqlEndpoint)
       if (!$scope.compare.sparqlEndpoint) then $scope.compare.sparqlEndpoint = $scope.main.sparqlEndpoint
       $scope.main.sparqlEndpointInput = $scope.main.sparqlEndpoint
       fetchGraphs('main')
-    if ($scope.compare.sparqlEndpoint) 
+    if ($scope.compare.sparqlEndpoint)
       $scope.compare.sparqlEndpointInput = $scope.compare.sparqlEndpoint
       if ($scope.compare.sparqlEndpoint!=$scope.main.sparqlEndpoint)
         fetchGraphs('compare')
@@ -752,8 +753,8 @@ angular.module('fi.seco.aether')
           $anchorScroll!
           unregister!
       )
-      
+
   )
 
 
-  	
+
