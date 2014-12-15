@@ -281,8 +281,7 @@ angular.module('app')
       if (sparqlEndpoint!=oldSparqlEndpoint)
         $scope.main.sparqlEndpointInput = sparqlEndpoint
         $scope.errors = []
-        for key, value of cancelers
-          value.resolve!
+        for key, value of cancelers.main then value.resolve!
         $location.search('sparqlEndpoint',sparqlEndpoint)
         if ($scope.compare.sparqlEndpoint==oldSparqlEndpoint || !$scope.compare.sparqlEndpoint? || $scope.compare.sparqlEndpoint=='') then $scope.compare.sparqlEndpoint=sparqlEndpoint
         fetchGraphs('main')
@@ -290,6 +289,7 @@ angular.module('app')
     $scope.$watch('compare.sparqlEndpoint', (sparqlEndpoint,oldSparqlEndpoint) ->
       if (sparqlEndpoint!=oldSparqlEndpoint)
         $scope.compare.sparqlEndpointInput = sparqlEndpoint
+        for key, value of cancelers.compare then value.resolve!
         if (sparqlEndpoint==$scope.main.sparqlEndpoint) then sparqlEndpoint=null
         $location.search('compare_sparqlEndpoint',sparqlEndpoint)
         fetchGraphs('compare')
@@ -354,11 +354,13 @@ angular.module('app')
     $scope.$watch('main.graphIRI', (graphIRI,oldGraphIRI) ->
       if (graphIRI!=oldGraphIRI)
         $location.search('graphIRI',graphIRI)
+        for key, value of cancelers.main then value.resolve!
         fetchDatasets('main')
         if ($scope.compare.graphIRI==oldGraphIRI || !$scope.compare.graphIRI?) then $scope.compare.graphIRI=graphIRI
     )
     $scope.$watch('compare.graphIRI', (graphIRI,oldGraphIRI) ->
       if (graphIRI!=oldGraphIRI)
+        for key, value of cancelers.compare then value.resolve!
         $location.search('compare_graphIRI',graphIRI)
         if ($scope.compare.graphIRI!=$scope.main.graphIRI || $scope.compare.sparqlEndpoint!=$scope.main.sparqlEndpoint) then fetchDatasets('compare')
     )
@@ -382,6 +384,7 @@ angular.module('app')
       ).error(handleError)
     $scope.$watch('main.datasetIRI', (datasetIRI,oldDatasetIRI) ->
       if (datasetIRI!=oldDatasetIRI)
+        for key, value of cancelers.main then value.resolve!
         $location.search('datasetIRI',datasetIRI)
         if ($scope.compare.graphIRI==$scope.main.graphIRI && $scope.compare.sparqlEndpoint == $scope.main.sparqlEndpoint && !$scope.compare.datasetIRI?) then $scope.compare.datasetIRI=datasetIRI
         clearData!
@@ -392,6 +395,7 @@ angular.module('app')
     )
     $scope.$watch('compare.datasetIRI', (datasetIRI,oldDatasetIRI) ->
       if (datasetIRI!=oldDatasetIRI)
+        for key, value of cancelers.compare then value.resolve!
         $location.search('compare.datasetIRI',datasetIRI)
         if ($scope.compare.datasetIRI!=$scope.main.datasetIRI || $scope.compare.sparqlEndpoint!=$scope.main.sparqlEndpoint || $scope.compare.graphIRI!=$scope.main.graphIRI)
           fetchStatistics('compare',true)
