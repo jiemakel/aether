@@ -12,7 +12,7 @@ angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.b
         authService.loginConfirmed()
   .config ($stateProvider, $urlRouterProvider) ->
     $urlRouterProvider.otherwise('/')
-    $urlRouterProvider.when('/latest?voidEndpoint&voidGraphIRI&graphIRI&sparqlEndpoint', ['$match', 'sparql', '$state', ($match, sparql, $state) ->
+    $urlRouterProvider.when('/latest?{voidEndpoint:any}&{voidGraphIRI:any}&{graphIRI:any}&{sparqlEndpoint:any}', ['$match', 'sparql', '$state', ($match, sparql, $state) ->
       query = """
         PREFIX prov: <http://www.w3.org/ns/prov#>
         PREFIX void: <http://rdfs.org/ns/void#>
@@ -33,7 +33,7 @@ angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.b
       )
     ])
     $stateProvider.state('view', {
-      url: '/view?sparqlEndpoint&datasetIRI&graphIRI&compare_sparqlEndpoint&compare_datasetIRI&compare_graphIRI&subjectLimitStat&subjectLimitValue&propertyLimitStat&propertyLimitValue&objectLimitStat&objectLimitValue&fullView'
+      url: '/view?{sparqlEndpoint:any}&{datasetIRI:any}&{graphIRI:any}&{compare_sparqlEndpoint:any}&{compare_datasetIRI:any}&{compare_graphIRI:any}&{subjectLimitStat:any}&{subjectLimitValue:any}&{propertyLimitStat:any}&{propertyLimitValue:any}&{objectLimitStat:any}&{objectLimitValue:any}&{fullView:any}'
       templateUrl: 'partials/view.html'
       controller:'ViewCtrl'
       reloadOnSearch: false
@@ -50,7 +50,7 @@ angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.b
       ]
     })
     $stateProvider.state('generate', {
-      url: '/generate?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doAllSingleSelections&doSchemaSelections'
+      url: '/generate?{sparqlEndpoint:any}&{graphIRI:any}&{sparulEndpoint:any}&{updateGraphIRI:any}&{datasetIRI:any}&{doAllSingleSelections:any}&{doSchemaSelections:any}'
       templateUrl: 'partials/generate.html'
       controller:'GenerateCtrl'
       onEnter: ['$rootScope', ($rootScope) ->
@@ -58,7 +58,7 @@ angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.b
       ]
     })
     $stateProvider.state('generate-menu', {
-      url: '/generate-menu?sparqlEndpoint&graphIRI&sparulEndpoint&updateGraphIRI&datasetIRI&doAllSingleSelections&doSchemaSelections'
+      url: '/generate-menu?{sparqlEndpoint:any}&{graphIRI:any}&{sparulEndpoint:any}&{updateGraphIRI:any}&{datasetIRI:any}&{doAllSingleSelections:any}&{doSchemaSelections:any}'
       templateUrl: 'partials/generateMenu.html'
       controller:'GenerateMenuCtrl'
       reloadOnSearch: false
