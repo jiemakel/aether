@@ -1,1 +1,1 @@
-angular.module('fi.seco.aether').controller 'IndexCtrl', -> 	
+angular.module('app').controller 'IndexCtrl', ->

@@ -3,9 +3,18 @@ require!{
   \main-bower-files
   \uglify-save-license
 }
-$ = require("gulp-load-plugins")!
+$ = require(\gulp-load-plugins)!
 
-gulp.task \dist:html, <[build]>, ->
+gulp.task \dist:partials, ->
+  gulp.src(".tmp/partials/**/*.html")
+    .pipe($.plumber(errorHandler: $.notify.onError("<%= error.stack %>")))
+    .pipe($.ngHtml2js(
+      moduleName: "app"
+      prefix: "partials/"
+    ))
+    .pipe(gulp.dest(".tmp/partials"))
+
+gulp.task \dist:html, <[dist:partials]>, ->
   jsFilter = $.filter("**/*.js")
   cssFilter = $.filter("**/*.css")
   gulp.src(".tmp/*.html")
@@ -17,22 +26,22 @@ gulp.task \dist:html, <[build]>, ->
       addRootSlash: false
       addPrefix: ".."
     ))
-    .pipe($.useref.assets())
-    .pipe($.rev())
+    .pipe($.useref.assets!)
+    .pipe($.rev!)
     .pipe(jsFilter)
-    .pipe($.ngAnnotate())
+    .pipe($.ngAnnotate!)
     .pipe($.uglify(preserveComments: uglifySaveLicense))
-    .pipe(jsFilter.restore())
+    .pipe(jsFilter.restore!)
     .pipe(cssFilter)
-    .pipe($.csso())
-    .pipe(cssFilter.restore())
-    .pipe($.useref.restore())
-    .pipe($.useref())
-    .pipe($.revReplace())
-    .pipe($.size())
+    .pipe($.csso!)
+    .pipe(cssFilter.restore!)
+    .pipe($.useref.restore!)
+    .pipe($.useref!)
+    .pipe($.revReplace!)
+    .pipe($.size!)
     .pipe(gulp.dest("dist"))
 
-gulp.task \dist:images, <[clean]>, ->
+gulp.task \dist:images, ->
   gulp.src("app/images/**/*")
     .pipe($.plumber(errorHandler: $.notify.onError("<%= error.stack %>")))
     .pipe($.cache($.imagemin(
@@ -40,15 +49,16 @@ gulp.task \dist:images, <[clean]>, ->
       progressive: true
       interlaced: true
     )))
-    .pipe($.size())
+    .pipe($.size!)
     .pipe(gulp.dest("dist/images"))
 
-gulp.task \dist:fonts, <[clean]>, ->
-  gulp.src(mainBowerFiles())
+gulp.task \dist:fonts, ->
+  gulp.src(mainBowerFiles!)
     .pipe($.plumber(errorHandler: $.notify.onError("<%= error.stack %>")))
     .pipe($.filter("**/*.{eot,svg,ttf,woff}"))
-    .pipe($.flatten())
-    .pipe($.size())
+    .pipe($.flatten!)
+    .pipe($.size!)
     .pipe(gulp.dest("dist/fonts"))
 
-gulp.task \dist, <[dist:html dist:images dist:fonts]>
+gulp.task \dist, (cb) ->
+  require("run-sequence") \build, <[dist:html dist:images dist:fonts]>, cb

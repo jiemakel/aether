@@ -2,7 +2,7 @@
   "name": "aether",
   "version": "1.0.0",
   "dependencies": {
-    "angular": "1.3.x",
+    "angular": "latest",
     "jquery": "latest",
     "bootstrap": "latest",
     "angular-ui-router": "latest",
@@ -10,10 +10,9 @@
     "angular-bootstrap": "latest",
     "angular-animate": "latest",
     "components-font-awesome": "latest",
-    "angular-http-auth": "~1.2.1"
+    "angular-http-auth": "latest"
   },
   "devDependencies": {
-    "angular-mocks": "*",
-    "angular-scenario": "*"
+    "angular-mocks": "*"
   }
 }

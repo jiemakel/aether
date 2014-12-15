@@ -1,4 +1,4 @@
-angular.module('fi.seco.aether')
+angular.module('app')
   .controller('GenerateMenuCtrl', ($rootScope,$http,$q,$scope,$location,$stateParams,sparql) ->
     $scope.errors=[]
     handleError = (data,status,headers,config) ->

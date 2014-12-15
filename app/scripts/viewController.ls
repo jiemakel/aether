@@ -1,4 +1,4 @@
-angular.module('fi.seco.aether')
+angular.module('app')
   .controller('ViewCtrl', ($scope,$q,$location,$timeout,voidService,sparql,$window,$anchorScroll,$stateParams,prefixService) ->
     $scope.Math = $window.Math
     $scope.scrollTo = (id) ->
@@ -237,39 +237,46 @@ angular.module('fi.seco.aether')
       if (cancelers[section].graphs?) then cancelers[section].graphs.resolve!
       cancelers[section].graphs = $q.defer!
       $scope.queries++
-      sparql.query($scope[section].sparqlEndpoint,'''
-        SELECT ?graphIRI (COUNT(?s) AS ?datasets) (COUNT(?s2) AS ?triples) {
-         {
-           ?s2 ?p ?o
-         }
-         UNION
-         {
-           GRAPH ?graphIRI { ?s2 ?p ?o }
-         }
-         UNION
-         {
-           GRAPH ?graphIRI {
-             ?s a <http://rdfs.org/ns/void#Dataset>
-           }
+      response <-! sparql.query($scope[section].sparqlEndpoint,'''
+        SELECT ?graphIRI (COUNT(?s) AS ?datasets) {
+          { GRAPH ?graphIRI {} }
+          UNION
+          {
+            GRAPH ?graphIRI {
+              ?s a <http://rdfs.org/ns/void#Dataset>
+            }
           } UNION {
-           ?s a <http://rdfs.org/ns/void#Dataset>
+            ?s a <http://rdfs.org/ns/void#Dataset>
           }
         }
         GROUP BY ?graphIRI
-      ''',{timeout: cancelers[section].graphs.promise}).success((data) ->
-        $scope.queries--
-        found = false
-        for binding in data.results.bindings
-          if (binding.graphIRI?.value==$scope[section].graphIRI) then found = true
-        if (!found) then delete $scope[section].graphIRI
-        $scope[section].graphIRIFetching=false
-        $scope[section].graphs = data.results.bindings
-        if (section=='main' && $scope.compare.sparqlEndpoint==$scope.main.sparqlEndpoint)
-          if (!found) then delete $scope.compare.graphIRI
-          $scope.compare.graphIRIFetching=false
-          $scope.compare.graphs = data.results.bindings
-        fetchDatasets(section)
-      ).error(handleError)
+      ''',{timeout: cancelers[section].graphs.promise}).then(_,handleError)
+      $scope.queries--
+      found = false
+      for binding in response.data.results.bindings
+        if (binding.graphIRI?.value==$scope[section].graphIRI) then found = true
+        if (!binding.graphIRI) then let binding
+          response <-! sparql.query($scope[section].sparqlEndpoint,'''
+            SELECT (COUNT(?s) AS ?triples) {
+              ?s ?p ?o
+            }
+          ''',{timeout: cancelers[section].graphs.promise}).then(_,handleError)
+          binding.triples=response.data.results.bindings[0].triples
+        else let section,binding
+          response <-! sparql.query($scope[section].sparqlEndpoint,'''
+            SELECT (COUNT(?s) AS ?triples) {
+              GRAPH <GRAPHIRI> { ?s ?p ?o }
+            }
+          '''.replace('<GRAPHIRI>',sparql.bindingToString(binding.graphIRI)),{timeout: cancelers[section].graphs.promise}).then(_,handleError)
+          binding.triples=response.data.results.bindings[0].triples
+      if (!found) then delete $scope[section].graphIRI
+      $scope[section].graphIRIFetching=false
+      $scope[section].graphs = response.data.results.bindings
+      if (section=='main' && $scope.compare.sparqlEndpoint==$scope.main.sparqlEndpoint)
+        if (!found) then delete $scope.compare.graphIRI
+        $scope.compare.graphIRIFetching=false
+        $scope.compare.graphs = response.data.results.bindings
+      fetchDatasets(section)
     $scope.$watch('main.sparqlEndpoint', (sparqlEndpoint,oldSparqlEndpoint) ->
       if (sparqlEndpoint!=oldSparqlEndpoint)
         $scope.main.sparqlEndpointInput = sparqlEndpoint
@@ -753,7 +760,6 @@ angular.module('fi.seco.aether')
           $anchorScroll!
           unregister!
       )
-
   )
 
 

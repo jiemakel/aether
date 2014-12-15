@@ -10,10 +10,10 @@ a(href='https://github.com/jiemakel/aether')
   p.
     These can then be <a ui-sref='view'>viewed</a> in order to get a general overview of the dataset.
   p.
-    The viewer can also compare dataset descriptions to each other, so that for 
+    The viewer can also compare dataset descriptions to each other, so that for
     example changes between two versions of a dataset can be glanced.
   p.
-    Alternatively, the <a ui-sref='view'>viewer</a> can also be used in live mode, where it 
+    Alternatively, the <a ui-sref='view'>viewer</a> can also be used in live mode, where it
     directly queries a SPARQL endpoint for the statistics it shows.
 h3 Example descriptions with highlighted points of interest:
 ul
@@ -43,7 +43,7 @@ ul
         for release 3.8. For example, Finnish and Norwegian have been dropped completely!
   li
     | <a href='http://data.europeana.eu/'>Europeana</a>:
-    | <a ui-sref='view({sparqlEndpoint:"http://ldf.fi/void/sparql",graphIRI:"http://data.europeana.eu/void/",datasetIRI:"http://data.europeana.eu/void/Dataset"})'>visualized</a> 
+    | <a ui-sref='view({sparqlEndpoint:"http://ldf.fi/void/sparql",graphIRI:"http://data.europeana.eu/void/",datasetIRI:"http://data.europeana.eu/void/Dataset"})'>visualized</a>
     | /
     | <a href='http://ldf.fi/void/get?graph=http://data.europeana.eu/void/'>as data</a>
     ul
@@ -73,7 +73,7 @@ ul
         VIAF has grown by
         <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2014-02-15.rdf&graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&compare_sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&compare_datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2013-11-24.rdf&compare_graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F#resource-object-classes'>178,673 persons</a>
         in 3 months.
-        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2014-02-15.rdf&graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&compare_sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&compare_datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2013-11-24.rdf&compare_graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&limitStat=Object%20Literal&limitObject=%221950%22#properties'>2,181</a>
+        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2014-02-15.rdf&graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&compare_sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&compare_datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2013-11-24.rdf&compare_graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&objectLimitStat=Object%20Literal&objectLimitValue=%221950%22#properties'>2,181</a>
         of these were born in 1950.
       li.
         The number of corporate entities has grown even more, by
@@ -87,7 +87,7 @@ ul
         more entity identifiers have been deprecated (merged with others).
       li.
         The 13th century Persian poet and mystic Rumi is now known by
-        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2014-02-15.rdf&graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&compare_sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&compare_datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2013-11-24.rdf&compare_graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&limitStat=Subject&limitObject=%3Chttp:%2F%2Fviaf.org%2Fviaf%2F98930150%3E#properties'>419</a>
+        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2014-02-15.rdf&graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&compare_sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&compare_datasetIRI=http:%2F%2Fviaf.org%2Fvoid%2FDataset@2013-11-24.rdf&compare_graphIRI=http:%2F%2Fviaf.org%2Fvoid%2F&subjectLimitStat=Subject&subjectLimitValue=%3Chttp:%2F%2Fviaf.org%2Fviaf%2F98930150%3E#properties'>419</a>
         different names, 6 more than in November.
       li.
         VIAF does not believe in
@@ -135,7 +135,7 @@ ul
         There are a whopping
         <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FFullDataset@3.9&graphIRI=http:%2F%2Fdbpedia.org%2Fint-void%2F&compare_graphIRI=http:%2F%2Fdbpedia.org%2Fvoid%2F&compare_datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FDataset@3.9#triple-parts'>574,138</a>
         properties in the dataset. Filtering by property namespace gives ideas on what properties would be most useful to map in different languages, for example
-        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FFullDataset@3.9&graphIRI=http:%2F%2Fdbpedia.org%2Fint-void%2F&compare_graphIRI=http:%2F%2Fdbpedia.org%2Fvoid%2F&compare_datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FDataset@3.9&limitStat=Property%20Namespace&limitObject=%3Chttp:%2F%2Fes.dbpedia.org%2Fproperty%2F%3E#properties'>Spanish</a> or
-        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FFullDataset@3.9&graphIRI=http:%2F%2Fdbpedia.org%2Fint-void%2F&compare_graphIRI=http:%2F%2Fdbpedia.org%2Fvoid%2F&compare_datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FDataset@3.9&limitStat=Property%20Namespace&limitObject=%3Chttp:%2F%2Fru.dbpedia.org%2Fproperty%2F%3E#properties'>Russian</a>.
+        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FFullDataset@3.9&graphIRI=http:%2F%2Fdbpedia.org%2Fint-void%2F&compare_graphIRI=http:%2F%2Fdbpedia.org%2Fvoid%2F&compare_datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FDataset@3.9&propertyLimitStat=Property%20Namespace&propertyLimitValue=%3Chttp:%2F%2Fes.dbpedia.org%2Fproperty%2F%3E#properties'>Spanish</a> or
+        <a href='#/view?sparqlEndpoint=http:%2F%2Fldf.fi%2Fvoid%2Fsparql&datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FFullDataset@3.9&graphIRI=http:%2F%2Fdbpedia.org%2Fint-void%2F&compare_graphIRI=http:%2F%2Fdbpedia.org%2Fvoid%2F&compare_datasetIRI=http:%2F%2Fdbpedia.org%2Fvoid%2FDataset@3.9&propertyLimitStat=Property%20Namespace&propertyLimitValue=%3Chttp:%2F%2Fru.dbpedia.org%2Fproperty%2F%3E#properties'>Russian</a>.
 .text-right.
   Contact: Eetu Mäkelä at <a href='mailto:eetu.makela@aalto.fi'>eetu.makela@aalto.fi</a>

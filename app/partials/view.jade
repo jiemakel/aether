@@ -35,8 +35,8 @@ div
           select.form-control.limitSelector(style='max-width:200px', ng-model='limits.object', ng-options='limit.name group by limit.stat for limit in availableLimits.object')
             option(value='') all objects
   .text-right (<a ui-sref='index'>back to main</a>)
-  h1 
-    a#top.displaced-anchor 
+  h1
+    a#top.displaced-anchor
     | Aether VoID Statistics Viewer
   .col-sm-6
     h3 View statistics for:
@@ -47,7 +47,7 @@ div
     .form-group
       label.control-label Graph:
       div(ng-class='main.graphIRIFetching && "input-group"')
-        select.form-control(ng-model='main.graphIRI', ng-readonly='main.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples.value | number) + " triples)" for graph in main.graphs')
+        select.form-control(ng-model='main.graphIRI', ng-readonly='main.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples ? (graph.triples.value | number) : "?") + " triples)" for graph in main.graphs')
         span.input-group-addon(ng-show='main.graphIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
     .form-group
@@ -79,7 +79,8 @@ div
   .text-center(style='position:relative;top:-120px;height:1em')
     a.glyphicon.glyphicon-transfer(href='', ng-click='switchCompare()')
   .clearfix
-  .alert.alert-block.alert-danger(ng-repeat='error in errors')
+  .alert.alert-block.alert-danger(ng-repeat='error in errors',ng-show="!removed")
+    .glyphicon.glyphicon-remove.pull-right(ng-click="removed=true")
     | {{error.errorSource}} returned error {{error.errorStatus}}:
     br
     | {{error.error}}
@@ -88,7 +89,7 @@ div
     br
     | {{error.query}}
   .page-header: h2
-    a#general.displaced-anchor 
+    a#general.displaced-anchor
     | General Statistics
   .col-sm-4.col-lg-3
     a#general-general.displaced-anchor
@@ -101,12 +102,12 @@ div
         tr
           th.text-right Triples:
           td.text-right
-            | {{ (main.stats.general.triples | number) || "?" }} 
+            | {{ (main.stats.general.triples | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.triples>compare.stats.general.triples ? "+": ""}}{{main.stats.general.triples-compare.stats.general.triples | number}} ({{Math.abs(main.stats.general.triples-compare.stats.general.triples)*100/compare.stats.general.triples | number:2}}%)', ng-class='main.stats.general.triples>compare.stats.general.triples ? "text-success glyphicon-chevron-up" : main.stats.general.triples<compare.stats.general.triples ? "text-danger glyphicon-chevron-down" : ""')
         tr
           th.text-right RDF Nodes:
           td.text-right
-            | {{ (main.stats.general.distinctRDFNodes | number) || "?" }} 
+            | {{ (main.stats.general.distinctRDFNodes | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes ? "+": ""}}{{main.stats.general.distinctRDFNodes-compare.stats.general.distinctRDFNodes | number}} ({{Math.abs(main.stats.general.distinctRDFNodes-compare.stats.general.distinctRDFNodes)*100/compare.stats.general.distinctRDFNodes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes, "glyphicon-chevron-up": main.stats.general.distinctRDFNodes>compare.stats.general.distinctRDFNodes, "text-danger": main.stats.general.distinctRDFNodes<compare.stats.general.distinctRDFNodes,"glyphicon-chevron-down":main.stats.general.distinctRDFNodes<compare.stats.general.distinctRDFNodes}')
   .col-sm-4.col-lg-3
     a#triple-parts.displaced-anchor
@@ -119,17 +120,17 @@ div
         tr
           th.text-right Subjects:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctSubjects) | number:2 }} triples/subject. {{ ((main.stats.general.distinctSubjects)*100/(main.stats.general.distinctBlankNodes+main.stats.general.distinctIRIReferences)) | number:2 }}% of resources appear as subjects.') {{ (main.stats.general.distinctSubjects | number) || "?" }} 
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctSubjects) | number:2 }} triples/subject. {{ ((main.stats.general.distinctSubjects)*100/(main.stats.general.distinctBlankNodes+main.stats.general.distinctIRIReferences)) | number:2 }}% of resources appear as subjects.') {{ (main.stats.general.distinctSubjects | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects ? "+": ""}}{{main.stats.general.distinctSubjects-compare.stats.general.distinctSubjects | number}} ({{Math.abs(main.stats.general.distinctSubjects-compare.stats.general.distinctSubjects)*100/compare.stats.general.distinctSubjects | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects, "glyphicon-chevron-up": main.stats.general.distinctSubjects>compare.stats.general.distinctSubjects, "text-danger": main.stats.general.distinctSubjects<compare.stats.general.distinctSubjects,"glyphicon-chevron-down":main.stats.general.distinctSubjects<compare.stats.general.distinctSubjects}')
         tr
           th.text-right Properties:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.properties) | number:2 }} triples/property') {{ (main.stats.general.properties | number) || "?" }} 
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.properties) | number:2 }} triples/property') {{ (main.stats.general.properties | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.properties>compare.stats.general.properties ? "+": ""}}{{main.stats.general.properties-compare.stats.general.properties | number}} ({{Math.abs(main.stats.general.properties-compare.stats.general.properties)*100/compare.stats.general.properties | number:2}}%)', ng-class='{ "text-success" : main.stats.general.properties>compare.stats.general.properties, "glyphicon-chevron-up": main.stats.general.properties>compare.stats.general.properties, "text-danger": main.stats.general.properties<compare.stats.general.properties,"glyphicon-chevron-down":main.stats.general.properties<compare.stats.general.properties}')
         tr
           th.text-right Objects:
           td.text-right
-            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctObjects) | number:2 }} triples/object. {{ ((main.stats.general.distinctObjects)*100/(main.stats.general.distinctRDFNodes)) | number:2 }}% of RDF nodes appear as objects.') {{ (main.stats.general.distinctObjects | number) || "?" }} 
+            a(href='', tooltip-placement='right', tooltip='{{ (main.stats.general.triples / main.stats.general.distinctObjects) | number:2 }} triples/object. {{ ((main.stats.general.distinctObjects)*100/(main.stats.general.distinctRDFNodes)) | number:2 }}% of RDF nodes appear as objects.') {{ (main.stats.general.distinctObjects | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.distinctObjects>compare.stats.general.distinctObjects ? "+": ""}}{{main.stats.general.distinctObjects-compare.stats.general.distinctObjects | number}} ({{Math.abs(main.stats.general.distinctObjects-compare.stats.general.distinctObjects)*100/compare.stats.general.distinctObjects | number:2}}%)', ng-class='{ "text-success" : main.stats.general.distinctObjects>compare.stats.general.distinctObjects, "glyphicon-chevron-up": main.stats.general.distinctObjects>compare.stats.general.distinctObjects, "text-danger": main.stats.general.distinctObjects<compare.stats.general.distinctObjects,"glyphicon-chevron-down":main.stats.general.distinctObjects<compare.stats.general.distinctObjects}')
   .col-sm-4.col-lg-3
     a#classes.displaced-anchor
@@ -142,22 +143,22 @@ div
         tr
           th.text-right Subject Classes:
           td.text-right
-            | {{ (main.stats.general.subjectClasses | number) || "?" }} 
+            | {{ (main.stats.general.subjectClasses | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.subjectClasses>compare.stats.general.subjectClasses ? "+": ""}}{{main.stats.general.subjectClasses-compare.stats.general.subjectClasses | number}} ({{Math.abs(main.stats.general.subjectClasses-compare.stats.general.subjectClasses)*100/compare.stats.general.subjectClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.subjectClasses>compare.stats.general.subjectClasses, "glyphicon-chevron-up": main.stats.general.subjectClasses>compare.stats.general.subjectClasses, "text-danger": main.stats.general.subjectClasses<compare.stats.general.subjectClasses,"glyphicon-chevron-down":main.stats.general.subjectClasses<compare.stats.general.subjectClasses}')
         tr
           th.text-right Property Classes:
           td.text-right
-            | {{ (main.stats.general.propertyClasses | number) || "?" }} 
+            | {{ (main.stats.general.propertyClasses | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.propertyClasses>compare.stats.general.propertyClasses ? "+": ""}}{{main.stats.general.propertyClasses-compare.stats.general.propertyClasses | number}} ({{Math.abs(main.stats.general.propertyClasses-compare.stats.general.propertyClasses)*100/compare.stats.general.propertyClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.propertyClasses>compare.stats.general.propertyClasses, "glyphicon-chevron-up": main.stats.general.propertyClasses>compare.stats.general.propertyClasses, "text-danger": main.stats.general.propertyClasses<compare.stats.general.propertyClasses,"glyphicon-chevron-down":main.stats.general.propertyClasses<compare.stats.general.propertyClasses}')
         tr
           th.text-right Object Classes:
           td.text-right
-            | {{ (main.stats.general.objectClasses | number) || "?" }} 
+            | {{ (main.stats.general.objectClasses | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.objectClasses>compare.stats.general.objectClasses ? "+": ""}}{{main.stats.general.objectClasses-compare.stats.general.objectClasses | number}} ({{Math.abs(main.stats.general.objectClasses-compare.stats.general.objectClasses)*100/compare.stats.general.objectClasses | number:2}}%)', ng-class='{ "text-success" : main.stats.general.objectClasses>compare.stats.general.objectClasses, "glyphicon-chevron-up": main.stats.general.objectClasses>compare.stats.general.objectClasses, "text-danger": main.stats.general.objectClasses<compare.stats.general.objectClasses,"glyphicon-chevron-down":main.stats.general.objectClasses<compare.stats.general.objectClasses}')
         tr
           th.text-right Total Classes:
           td.text-right
-            | {{ (main.stats.general.classes | number) || "?" }} 
+            | {{ (main.stats.general.classes | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.classes>compare.stats.general.classes ? "+": ""}}{{main.stats.general.classes-compare.stats.general.classes | number}} ({{Math.abs(main.stats.general.classes-compare.stats.general.classes)*100/compare.stats.general.classes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.classes>compare.stats.general.classes, "glyphicon-chevron-up": main.stats.general.classes>compare.stats.general.classes, "text-danger": main.stats.general.classes<compare.stats.general.classes,"glyphicon-chevron-down":main.stats.general.classes<compare.stats.general.classes}')
   .col-sm-3.col-lg-3
     a#literal-components.displaced-anchor
@@ -170,16 +171,16 @@ div
         tr
           th.text-right Datatypes:
           td.text-right
-            | {{ (main.stats.general.datatypes | number) || "?" }} 
+            | {{ (main.stats.general.datatypes | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.datatypes>compare.stats.general.datatypes ? "+": ""}}{{main.stats.general.datatypes-compare.stats.general.datatypes | number}} ({{Math.abs(main.stats.general.datatypes-compare.stats.general.datatypes)*100/compare.stats.general.datatypes | number:2}}%)', ng-class='{ "text-success" : main.stats.general.datatypes>compare.stats.general.datatypes, "glyphicon-chevron-up": main.stats.general.datatypes>compare.stats.general.datatypes, "text-danger": main.stats.general.datatypes<compare.stats.general.datatypes,"glyphicon-chevron-down":main.stats.general.datatypes<compare.stats.general.datatypes}')
         tr
           th.text-right Languages:
           td.text-right
-            | {{ (main.stats.general.languages | number) || "?" }} 
+            | {{ (main.stats.general.languages | number) || "?" }}
             span.glyphicon(tooltip-placement='right', tooltip='{{main.stats.general.languages>compare.stats.general.languages ? "+": ""}}{{main.stats.general.languages-compare.stats.general.languages | number}} ({{Math.abs(main.stats.general.languages-compare.stats.general.languages)*100/compare.stats.general.languages | number:2}}%)', ng-class='{ "text-success" : main.stats.general.languages>compare.stats.general.languages, "glyphicon-chevron-up": main.stats.general.languages>compare.stats.general.languages, "text-danger": main.stats.general.languages<compare.stats.general.languages,"glyphicon-chevron-down":main.stats.general.languages<compare.stats.general.languages}')
   .clearfix.visible-lg-block
   .col-sm-3.col-lg-2
-    h5 
+    h5
       a#subject-node-types.displaced-anchor
       | Subject RDF Node Types
     nvd3-pie-chart#subjectRDFNodes(data='main.stats.general.subjectRDFNodes', margin='{left:0,top:0,bottom:0,right:0}', showlegend='false', tooltips='true', showlabels='true', pielabelsoutside='false', showvalues='true', tooltipcontent='subjectRDFNodeTooltipContent', valueformat='yTickFormat', labeltype='percent')
@@ -350,7 +351,7 @@ div
       div
         | Resources shown account for {{ main.stats.triple["Object Resource"].total/main.stats.general.triples*100 | number:2 }}% of total triples
   .col-sm-12.animate-show(ng-show='fullView && main.stats.triple["Object Literal"].total>0',ng-class='main.stats.triple["Object Resource"]>0 ? "col-lg-6" : ""')
-      h4 
+      h4
         a#literal-objects.displaced-anchor
         | Most Referenced Literal Objects
       nvd3-discrete-bar-chart#Object_Literal(callback='registerGraph',data='main.stats.triple["Object Literal"].graphData', showxaxis='true', xaxistickformat='xTickFormat', xaxisrotatelabels='45', showyaxis='true', showlegend='false', showcontrols='false', margin='{left:100,top:10,bottom:120,right:0}', clipedge='true', yaxistickformat='yTickFormat', interactive='true', tooltipcontent='tooltipContent', tooltips='true')

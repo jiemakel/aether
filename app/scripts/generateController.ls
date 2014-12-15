@@ -1,4 +1,4 @@
-angular.module('fi.seco.aether')
+angular.module('app')
   .controller('GenerateCtrl', ($stateParams,$window,$scope,$modal,$timeout,sparql,voidService) ->
     $scope.Math=$window.Math
     $scope.errors=[]
@@ -94,7 +94,7 @@ angular.module('fi.seco.aether')
         if (voidService.banList[limit.stat]) then for bannedStat in voidService.banList[limit.stat]
           banned[bannedStat]=true
       track = { successfulParts : 0, errored : false, total : 0 }
-      statsToCalculate = if !limits then voidService.allStats else voidService.tripleStats 
+      statsToCalculate = if !limits then voidService.allStats else voidService.tripleStats
       for statName in statsToCalculate when !banned[statName]
         calculateStatistic(track,statName,limits,3)
         track.total++
