@@ -66,7 +66,7 @@ div
     .form-group
       label.control-label Graph:
       div(ng-class='compare.graphIRIFetching && "input-group"')
-        select.form-control(ng-model='compare.graphIRI', ng-readonly='compare.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples.value | number) + " triples)" for graph in compare.graphs')
+        select.form-control(ng-model='compare.graphIRI', ng-readonly='compare.graphIRIFetching', ng-options='graph.graphIRI.value as (graph.graphIRI.value || "default") + " (" + ((graph.datasets.value>0 && (graph.datasets.value | number)+" VoID descriptions, ") || "") + (graph.triples ? (graph.triples.value | number) : "?") + " triples)" for graph in compare.graphs')
         span.input-group-addon(ng-show='compare.graphIRIFetching')
           i.glyphicon.glyphicon-refresh.fa-spin
     .form-group
