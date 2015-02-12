@@ -310,7 +310,7 @@ void-ext:minLength
 	rdfs:domain void:Dataset ;
 	rdfs:range xsd:integer .
 
-void-ext:length
+void-ext:maxLength
 	a owl:DatatypeProperty ;
 	rdfs:label "maximum length" ;
 	rdfs:comment "A maximum length (inclusive) that is required for an object to be included in a length-based partition." ;
