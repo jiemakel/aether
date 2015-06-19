@@ -1306,7 +1306,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |DATASETIRI| void:sparqlEndpoint |SPARQLENDPOINT| .
       |DATASETIRI| dcterms:created "|STARTTIME|"^^xsd:dateTime .      
       |GRAPHIRIINFO|
-      |DATASETIRI| prov:generatedBy _:a .
+      |DATASETIRI| prov:wasGeneratedBy _:a .
       _:a a prov:Activity .
       _:a prov:startedAtTime "|STARTTIME|"^^xsd:dateTime .
       _:a prov:wasAssociatedWith _:b .
@@ -1323,7 +1323,7 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
       |ENDUPDATEGRAPH|
     } WHERE {
       |BEGINUPDATEGRAPH|
-      |DATASETIRI| prov:generatedBy ?a .
+      |DATASETIRI| prov:wasGeneratedBy ?a .
       |ENDUPDATEGRAPH|
     }
   '''
