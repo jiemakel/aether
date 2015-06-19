@@ -307,7 +307,7 @@ angular.module('app')
             GRAPH <#{$scope[section].graphIRI}> {
               ?datasetIRI a <http://rdfs.org/ns/void\#Dataset> .
               OPTIONAL {
-                ?datasetIRI <http://www.w3.org/ns/prov\#generatedBy> ?activity .
+                ?datasetIRI <http://www.w3.org/ns/prov\#wasGeneratedBy> ?activity .
                 ?activity <http://www.w3.org/ns/prov\#startedAtTime> ?time
               }
               OPTIONAL { ?datasetIRI <http://rdfs.org/ns/void\#sparqlEndpoint> ?sparqlEndpoint . }
@@ -320,7 +320,7 @@ angular.module('app')
           SELECT DISTINCT ?datasetIRI ?sparqlEndpoint ?graphIRI {
             ?datasetIRI a <http://rdfs.org/ns/void#Dataset> .
             OPTIONAL {
-              ?datasetIRI <http://www.w3.org/ns/prov#generatedBy> ?activity .
+              ?datasetIRI <http://www.w3.org/ns/prov#wasGeneratedBy> ?activity .
               ?activity <http://www.w3.org/ns/prov#startedAtTime> ?time
             }
             OPTIONAL { ?datasetIRI <http://rdfs.org/ns/void#sparqlEndpoint> ?sparqlEndpoint . }
