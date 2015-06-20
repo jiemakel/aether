@@ -20,7 +20,7 @@ angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.b
         SELECT ?datasetIRI {
           |ENDPOINTINFO|
           |GRAPHIRIINFO|
-          ?datasetIRI prov:generatedBy ?a .
+          ?datasetIRI prov:wasGeneratedBy ?a .
           ?a prov:startedAtTime ?time .
         }
         ORDER BY DESC(?time)
