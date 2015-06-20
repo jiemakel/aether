@@ -324,8 +324,8 @@ angular.module('fi.seco.void',['fi.seco.sparql']).factory('voidService', (sparql
                 |ENDGRAPH|
               }
             }
-            BIND (strlen(str(?n)) AS ?minLength)
-            FILTER(?minLength<10)
+            BIND (strlen(str(?n)) AS ?length)
+            FILTER(?length<10)
           }
           GROUP BY ?length
           ORDER BY ?length
