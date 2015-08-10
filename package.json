@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
-    "LiveScript": "^1.2.0",
+    "livescript": "latest",
     "bower-config": "^0.5.2",
     "browser-sync": "1.1.x",
     "chalk": "^0.5.1",
