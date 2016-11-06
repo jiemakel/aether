@@ -1,9 +1,9 @@
 angular.module('fi.seco.httpthrottle').value('maxRequests',8)
 
 angular.module('app', [ 'http-auth-interceptor', 'ngAnimate', 'ui.router', 'ui.bootstrap', 'nvd3ChartDirectives', 'fi.seco.sparql', 'fi.seco.void', 'fi.seco.prefix', 'fi.seco.httpthrottle' ])
-  .run ($rootScope,$modal,$http,authService) ->
+  .run ($rootScope,$uibModal,$http,authService) ->
     $rootScope.$on 'event:auth-loginRequired', ->
-      $modal.open({
+      $uibModal.open({
         templateUrl:'login.html'
       }).result.then (auth) ->
         $rootScope.username = auth.username

@@ -1,5 +1,5 @@
 angular.module('app')
-  .controller('GenerateCtrl', ($stateParams,$window,$scope,$modal,$timeout,sparql,voidService) ->
+  .controller('GenerateCtrl', ($stateParams,$window,$scope,$uibModal,$timeout,sparql,voidService) ->
     $scope.Math=$window.Math
     $scope.errors=[]
     function handleError(data,status,headers,config)
@@ -122,7 +122,7 @@ angular.module('app')
           $timeout.cancel(timer)
           $scope.endTime = new Date()
           voidService.insertEndTime($stateParams.sparulEndpoint,$stateParams.updateGraphIRI,"<#{$stateParams.datasetIRI}>",$scope.endTime.toISOString()).success((data) ->
-            $modal.open({scope:$scope,template:'''
+            $uibModal.open({scope:$scope,template:'''
               <div class="modal-header">
                   <h3>Generation Complete</h3>
               </div>
