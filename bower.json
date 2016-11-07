@@ -2,17 +2,18 @@
   "name": "aether",
   "version": "1.0.0",
   "dependencies": {
-    "angular": "latest",
-    "jquery": "latest",
-    "bootstrap": "latest",
-    "angular-ui-router": "latest",
-    "angularjs-nvd3-directives": "latest",
-    "angular-bootstrap": "latest",
-    "angular-animate": "latest",
-    "components-font-awesome": "latest",
-    "angular-http-auth": "latest"
+    "angular": "1.4.3",
+    "jquery": "2.1.4",
+    "bootstrap": "3.3.5",
+    "angular-ui-router": "0.2.15",
+    "angularjs-nvd3-directives": "0.0.7",
+    "angular-bootstrap": "0.13.3",
+    "angular-animate": "1.4.3",
+    "components-font-awesome": "4.4.0",
+    "angular-http-auth": "1.2.1"
   },
-  "devDependencies": {
-    "angular-mocks": "*"
+  "resolutions": {
+    "angular": "1.4.3",
+    "d3": "~3.4.1"
   }
 }
